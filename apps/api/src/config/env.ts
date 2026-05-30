@@ -2,8 +2,10 @@ import path from 'path';
 import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
 
-// Load .env from apps/api directory, resolving relative to this file
-dotenvConfig({ path: path.resolve(__dirname, '../../.env') });
+// Load .env — try multiple paths so this works locally, in dist/, and on Render.
+// On Render, NODE_ENV=production and no .env file exists — vars come from the dashboard.
+dotenvConfig({ path: path.resolve(process.cwd(), '.env') });
+dotenvConfig({ path: path.resolve(__dirname, '../../.env') }); // fallback for local dist/ run
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -32,9 +34,13 @@ const envSchema = z.object({
 
 const parsed = envSchema.safeParse(process.env);
 
+
 if (!parsed.success) {
-  console.error('❌ Invalid environment variables:');
-  console.error(JSON.stringify(parsed.error.flatten().fieldErrors, null, 2));
+  // Use synchronous write — console.error can be lost if process exits too fast
+  process.stderr.write('\n❌ SERVER STARTUP FAILED — Invalid or missing environment variables:\n');
+  process.stderr.write(JSON.stringify(parsed.error.flatten().fieldErrors, null, 2) + '\n');
+  process.stderr.write('\nRequired vars: DATABASE_URL, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET\n');
+  process.stderr.write('Set these in your Render dashboard → Environment tab.\n\n');
   process.exit(1);
 }
 
