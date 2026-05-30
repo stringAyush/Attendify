@@ -1,0 +1,311 @@
+// ============================================================
+// Attendify — Complete Prisma Database Schema
+// PostgreSQL + Prisma ORM
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────
+
+enum UserRole {
+  TEACHER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  HALF_DAY
+  EXCUSED
+}
+
+enum AttendanceMode {
+  MANUAL
+  QR
+  PIN
+}
+
+enum NotificationType {
+  PENDING_ATTENDANCE
+  LOW_ATTENDANCE
+  SCHEDULE_REMINDER
+  SYSTEM
+}
+
+// ─── Core Models ─────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  password        String?   // null for OAuth users
+  avatar          String?
+  role            UserRole  @default(TEACHER)
+  googleId        String?   @unique
+  isEmailVerified Boolean   @default(false)
+  resetToken      String?
+  resetTokenExpiry DateTime?
+  refreshToken    String?
+
+  // Relations
+  teacher         Teacher?
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([googleId])
+  @@map("users")
+}
+
+model Institution {
+  id          String    @id @default(cuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  logo        String?
+  website     String?
+  timezone    String    @default("Asia/Kolkata")
+
+  // Relations
+  teachers    Teacher[]
+  classes     Class[]
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("institutions")
+}
+
+model Teacher {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  institutionId String?
+  employeeId    String?
+  department    String?
+  qualification String?
+  phone         String?
+  fcmToken      String?
+
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  classes       Class[]
+  subjects      Subject[]
+  sessions      AttendanceSession[]
+
+  // Timestamps
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([institutionId])
+  @@map("teachers")
+}
+
+model Class {
+  id            String    @id @default(cuid())
+  name          String
+  section       String?
+  academicYear  String
+  semester      String?
+  teacherId     String
+  institutionId String?
+
+  // Relations
+  teacher       Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  subjects      Subject[]
+  enrollments   ClassEnrollment[]
+  sessions      AttendanceSession[]
+
+  // Soft delete
+  deletedAt     DateTime?
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([teacherId])
+  @@index([institutionId])
+  @@index([deletedAt])
+  @@map("classes")
+}
+
+model Subject {
+  id          String    @id @default(cuid())
+  name        String
+  code        String?
+  classId     String
+  teacherId   String
+  schedule    Json?     // Array of { dayOfWeek, startTime, endTime }
+
+  // Relations
+  class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+  sessions    AttendanceSession[]
+
+  // Soft delete
+  deletedAt   DateTime?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([classId])
+  @@index([teacherId])
+  @@index([deletedAt])
+  @@map("subjects")
+}
+
+model Student {
+  id              String    @id @default(cuid())
+  name            String
+  rollNumber      String
+  email           String?
+  phone           String?
+  avatar          String?
+  classId         String
+  enrollmentDate  DateTime  @default(now())
+  isActive        Boolean   @default(true)
+
+  // Relations
+  enrollments     ClassEnrollment[]
+  attendanceRecords AttendanceRecord[]
+
+  // Soft delete
+  deletedAt       DateTime?
+
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([rollNumber, classId])
+  @@index([classId])
+  @@index([rollNumber])
+  @@index([deletedAt])
+  @@map("students")
+}
+
+model ClassEnrollment {
+  id          String    @id @default(cuid())
+  classId     String
+  studentId   String
+  enrolledAt  DateTime  @default(now())
+
+  // Relations
+  class       Class     @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+  @@index([classId])
+  @@index([studentId])
+  @@map("class_enrollments")
+}
+
+model AttendanceSession {
+  id          String          @id @default(cuid())
+  subjectId   String
+  classId     String
+  teacherId   String
+  date        DateTime        @db.Date
+  startTime   String?
+  endTime     String?
+  mode        AttendanceMode  @default(MANUAL)
+  qrCode      String?         @unique
+  pin         String?
+  notes       String?
+  isFinalized Boolean         @default(false)
+
+  // Relations
+  subject     Subject         @relation(fields: [subjectId], references: [id])
+  class       Class           @relation(fields: [classId], references: [id])
+  teacher     Teacher         @relation(fields: [teacherId], references: [id])
+  records     AttendanceRecord[]
+
+  // Timestamps
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Prevent duplicate sessions for same subject on same day
+  @@unique([subjectId, date])
+  @@index([classId])
+  @@index([teacherId])
+  @@index([date])
+  @@map("attendance_sessions")
+}
+
+model AttendanceRecord {
+  id          String            @id @default(cuid())
+  sessionId   String
+  studentId   String
+  status      AttendanceStatus  @default(ABSENT)
+  markedAt    DateTime          @default(now())
+  notes       String?
+
+  // Relations
+  session     AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student     Student           @relation(fields: [studentId], references: [id])
+
+  // Prevent duplicate records per student per session
+  @@unique([sessionId, studentId])
+  @@index([sessionId])
+  @@index([studentId])
+  @@index([status])
+  @@map("attendance_records")
+}
+
+model Notification {
+  id        String            @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean           @default(false)
+  metadata  Json?
+
+  // Relations
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime          @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  userId      String
+  action      String
+  entityType  String
+  entityId    String
+  changes     Json?
+  ipAddress   String?
+  userAgent   String?
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Attendify</string>
+    <string name="title_activity_main">Attendify</string>
+    <string name="package_name">app.attendify</string>
+    <string name="custom_url_scheme">app.attendify</string>
+</resources>
