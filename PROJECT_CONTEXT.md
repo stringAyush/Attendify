@@ -542,17 +542,18 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 - [x] Service worker (Cache-First static, Network-First API)
 - [x] PWA manifest (installable)
 - [x] LAN IP dependency removed — production-ready networking
-- [x] CORS hardened (no 192.168.x.x regex, capacitor:// origin added)
+- [x] CORS hardened (no 192.168.x.x regex, capacitor:// origin added, wildcard .vercel.app support)
 
-## 16. Pending / Roadmap
+## 16. Recent Stability & Production Fixes (May 2026)
 
-- [ ] QR code and PIN-based student self-check-in
-- [ ] Push notifications (Firebase Cloud Messaging)
-- [ ] Google OAuth native flow in Capacitor (in-app browser callback)
-- [ ] Dexie (IndexedDB) full offline database — currently installed but not wired
-- [ ] Role-based access (admin, teacher, student views)
-- [ ] Multi-institution / multi-teacher support
-- [ ] iOS Capacitor build
+| Component | Issue | Fix | Rationale |
+| :--- | :--- | :--- | :--- |
+| **API Tsconfig** | `Invalid value for '--ignoreDeprecations'` | Set `ignoreDeprecations` compiler option to `"5.0"` | Silences Node module resolution deprecation warnings correctly under TS 5.x. |
+| **API Build (Render)** | Missing build types on Render | Moved all `@types/*` devDependencies to standard `dependencies` | Render production builds prune devDependencies, causing compilation to fail due to missing type definitions. |
+| **Prisma Engine (Render)** | Native database engine crash | Added `binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]` | Ensures the compiled database client has the correct Linux engine binary target for Render containers. |
+| **Web Build (Vercel)** | Turbopack PostCSS resolution error | Moved `@tailwindcss/postcss` and other build dependencies to `dependencies` | Prevents Vercel production prune from omitting packages needed to process Tailwind v4. |
+| **CORS policy** | Dynamic Vercel previews blocked | Added dynamic check for `.vercel.app` suffixes | Allows all pull request and branch deployments on Vercel to securely connect to Render database endpoints without manual config updates. |
+| **Auth / Signup** | Validation failed on optional institution | Added `.or(z.literal(''))` to `institutionName` in `signupSchema` | Allows blank input on optional form fields from frontend serializers. |
 
 ---
 
@@ -560,8 +561,8 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 
 | File | Purpose |
 |------|---------|
-| `apps/api/src/app.ts` | Express app, CORS config, middleware order |
-| `apps/api/src/config/env.ts` | All env vars parsed + validated with Zod |
+| `apps/api/src/app.ts` | Express app, CORS config (including *.vercel.app check), middleware order |
+| `apps/api/src/config/env.ts` | All env vars parsed + validated with Zod (including strict DATABASE_URL check) |
 | `apps/api/src/config/database.ts` | Prisma client singleton |
 | `apps/api/src/middleware/auth.ts` | JWT Bearer guard — sets `req.user` |
 | `apps/web/lib/api/client.ts` | Axios client, token attach, offline queue, auto-refresh |
@@ -575,3 +576,4 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 | `apps/web/app/(dashboard)/students/detail/page.tsx` | Static student detail (replaces dynamic `[id]`) |
 | `apps/web/app/offline/page.tsx` | SW offline fallback page |
 | `docker-compose.yml` | PostgreSQL container definition |
+
