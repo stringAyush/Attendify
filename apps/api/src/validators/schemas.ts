@@ -8,7 +8,7 @@ export const signupSchema = z.object({
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number'),
-  institutionName: z.string().min(2).max(200).optional(),
+  institutionName: z.string().min(2).max(200).optional().or(z.literal('')),
 });
 
 export const loginSchema = z.object({
