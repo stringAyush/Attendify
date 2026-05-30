@@ -7,7 +7,6 @@ import { config } from '@/config/env';
 import { OAuth2Client } from 'google-auth-library';
 import { UserRole } from '@prisma/client';
 
-const googleClient = new OAuth2Client(config.GOOGLE_CLIENT_ID);
 
 export interface AuthResult {
   user: {
@@ -142,14 +141,19 @@ export const AuthService = {
       throw createError('Google OAuth is not configured', 503);
     }
 
-    const { tokens } = await googleClient.getToken({
+    const client = new OAuth2Client({
+      clientId: config.GOOGLE_CLIENT_ID,
+      clientSecret: config.GOOGLE_CLIENT_SECRET,
+    });
+
+    const { tokens } = await client.getToken({
       code,
       redirect_uri: redirectUri || config.GOOGLE_CALLBACK_URL || `${config.FRONTEND_URL}/auth/google/callback`,
     });
 
-    googleClient.setCredentials(tokens);
+    client.setCredentials(tokens);
 
-    const ticket = await googleClient.verifyIdToken({
+    const ticket = await client.verifyIdToken({
       idToken: tokens.id_token!,
       audience: config.GOOGLE_CLIENT_ID,
     });
