@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
+    "ignoreDeprecations": "5.0",
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
@@ -19,13 +22,21 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "typeRoots": [
       "./node_modules/@types",
       "../../node_modules/@types"
     ]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts"
+  ]
 }
