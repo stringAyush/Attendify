@@ -57,6 +57,9 @@ app.use(
       // Always allow configured frontend URL
       if (origin === config.FRONTEND_URL) return callback(null, true);
 
+      // Support Vercel deployments/previews
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+
       // Allow any extra origins added via env
       if (extraOrigins.has(origin)) return callback(null, true);
 

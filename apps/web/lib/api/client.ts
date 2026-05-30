@@ -11,6 +11,14 @@ import axios, {
 // NEVER use 192.168.x.x, localhost, or 127.0.0.1 in production builds.
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
+if (typeof window !== 'undefined' && API_URL.includes('localhost') && !window.location.hostname.includes('localhost')) {
+  console.warn(
+    `⚠️ [Attendify Config Warning] The web application is running on a remote server (${window.location.hostname}), ` +
+    `but it is attempting to connect to a local API server at '${API_URL}'. ` +
+    `Ensure you have set the NEXT_PUBLIC_API_URL environment variable in Vercel to your deployed Render API (e.g., https://attendify-wgo4.onrender.com).`
+  );
+}
+
 // ─── Network Status Utility ───────────────────────────────────
 // Tracks online/offline state client-side.
 // Other modules (stores, hooks) can import isOnline() to gate API calls.
