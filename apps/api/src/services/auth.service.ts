@@ -137,14 +137,14 @@ export const AuthService = {
     };
   },
 
-  async googleAuth(code: string): Promise<AuthResult> {
+  async googleAuth(code: string, redirectUri?: string): Promise<AuthResult> {
     if (!config.GOOGLE_CLIENT_ID || !config.GOOGLE_CLIENT_SECRET) {
       throw createError('Google OAuth is not configured', 503);
     }
 
     const { tokens } = await googleClient.getToken({
       code,
-      redirect_uri: config.GOOGLE_CALLBACK_URL || `${config.FRONTEND_URL}/auth/google/callback`,
+      redirect_uri: redirectUri || config.GOOGLE_CALLBACK_URL || `${config.FRONTEND_URL}/auth/google/callback`,
     });
 
     googleClient.setCredentials(tokens);

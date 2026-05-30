@@ -40,7 +40,7 @@ router.post(
   '/google',
   validate(googleAuthSchema),
   asyncHandler(async (req, res) => {
-    const result = await AuthService.googleAuth(req.body.code);
+    const result = await AuthService.googleAuth(req.body.code, req.body.redirectUri);
     res.json(ApiSuccessResponse(result, 'Authenticated with Google'));
   })
 );

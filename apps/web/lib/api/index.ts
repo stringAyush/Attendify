@@ -32,7 +32,7 @@ export const authApi = {
   login: (data: { email: string; password: string }) =>
     apiPost<AuthResult>('/auth/login', data),
 
-  googleAuth: (code: string) => apiPost<AuthResult>('/auth/google', { code }),
+  googleAuth: (code: string, redirectUri: string) => apiPost<AuthResult>('/auth/google', { code, redirectUri }),
 
   refresh: (refreshToken: string) =>
     apiPost<AuthResult>('/auth/refresh', { refreshToken }),

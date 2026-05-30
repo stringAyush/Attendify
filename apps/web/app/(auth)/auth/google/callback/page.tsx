@@ -20,8 +20,10 @@ function GoogleCallbackInner() {
       return;
     }
 
+    const redirectUri = window.location.origin + '/auth/google/callback';
+
     authApi
-      .googleAuth(code)
+      .googleAuth(code, redirectUri)
       .then((res) => {
         const { user, accessToken, refreshToken } = res.data;
         // Set in-memory access token

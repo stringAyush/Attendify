@@ -18,6 +18,7 @@ export const loginSchema = z.object({
 
 export const googleAuthSchema = z.object({
   code: z.string().min(1, 'Authorization code is required'),
+  redirectUri: z.string().url().optional(),
 });
 
 export const forgotPasswordSchema = z.object({
