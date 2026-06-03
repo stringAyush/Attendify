@@ -356,7 +356,7 @@ export default function AttendancePage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
                 >
-                  <Card className="p-5 hover:shadow-md transition-all duration-200 cursor-pointer group" hover onClick={() => openSession(session.id)}>
+                  <Card className="p-5 hover:shadow-sm transition-all duration-150 cursor-pointer group" clickable onClick={() => openSession(session.id)}>
                     <div className="flex items-start justify-between mb-3">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

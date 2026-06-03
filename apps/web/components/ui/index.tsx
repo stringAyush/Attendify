@@ -4,7 +4,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion, HTMLMotionProps, AnimatePresence } from 'framer-motion';
 
-// ─── Button ──────────────────────────────────────────────────
+// ─── Button ───────────────────────────────────────────────────
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg';
@@ -23,25 +23,25 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus:outline-none focus:ring-2 focus:ring-offset-2';
+    'inline-flex items-center justify-center gap-1.5 font-medium rounded-lg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed select-none';
 
   const variants = {
     primary:
-      'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm shadow-indigo-200 dark:shadow-indigo-900/30',
+      'bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-indigo-500 active:bg-indigo-800',
     secondary:
-      'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 focus:ring-slate-400',
+      'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 focus-visible:ring-slate-400',
     danger:
-      'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-sm shadow-red-200',
+      'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 active:bg-red-800',
     ghost:
-      'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400',
+      'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 focus-visible:ring-slate-400',
     outline:
-      'border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 focus:ring-slate-400',
+      'border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 focus-visible:ring-slate-400 bg-white dark:bg-transparent',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs',
-    md: 'px-5 py-2.5 text-sm',
-    lg: 'px-6 py-3 text-base',
+    sm: 'h-7 px-2.5 text-xs',
+    md: 'h-9 px-3.5 text-sm',
+    lg: 'h-10 px-5 text-sm',
   };
 
   return (
@@ -51,7 +51,7 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+        <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
@@ -61,23 +61,24 @@ export function Button({
   );
 }
 
-// ─── Input ───────────────────────────────────────────────────
+// ─── Input ────────────────────────────────────────────────────
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  hint?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, leftIcon, rightIcon, className, id, ...props }, ref) => {
+  ({ label, error, hint, leftIcon, rightIcon, className, id, ...props }, ref) => {
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
     return (
       <div className="w-full">
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide"
           >
             {label}
           </label>
@@ -92,14 +93,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             ref={ref}
             className={cn(
-              'w-full px-4 py-3 rounded-xl border text-sm transition-all duration-200 outline-none',
+              'w-full h-9 px-3 rounded-lg border text-sm transition-colors duration-150 outline-none',
               'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100',
-              'placeholder:text-slate-400',
+              'placeholder:text-slate-400 dark:placeholder:text-slate-500',
               error
-                ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 dark:focus:ring-red-900/30'
-                : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30',
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10',
+                ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100 dark:focus:ring-red-900/20'
+                : 'border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20',
+              leftIcon && 'pl-9',
+              rightIcon && 'pr-9',
               className
             )}
             {...props}
@@ -110,14 +111,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </span>
           )}
         </div>
-        {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+        {!error && hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
       </div>
     );
   }
 );
 Input.displayName = 'Input';
 
-// ─── Select ──────────────────────────────────────────────────
+// ─── Select ───────────────────────────────────────────────────
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
@@ -133,7 +135,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide"
           >
             {label}
           </label>
@@ -142,11 +144,11 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           id={selectId}
           ref={ref}
           className={cn(
-            'w-full px-4 py-3 rounded-xl border text-sm transition-all duration-200 outline-none appearance-none',
+            'w-full h-9 px-3 rounded-lg border text-sm transition-colors duration-150 outline-none appearance-none cursor-pointer',
             'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100',
             error
               ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100'
-              : 'border-slate-200 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30',
+              : 'border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20',
             className
           )}
           {...props}
@@ -162,35 +164,34 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
+        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
       </div>
     );
   }
 );
 Select.displayName = 'Select';
 
-// ─── Card ─────────────────────────────────────────────────────
-interface CardProps extends HTMLMotionProps<'div'> {
-  hover?: boolean;
+// ─── Card ──────────────────────────────────────────────────────
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  clickable?: boolean;
 }
 
-export function Card({ children, className, hover = false, ...props }: CardProps) {
+export function Card({ children, className, clickable = false, ...props }: CardProps) {
   return (
-    <motion.div
+    <div
       className={cn(
-        'bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm',
-        hover && 'cursor-pointer hover:shadow-md hover:border-slate-200 dark:hover:border-slate-700 transition-all duration-200',
+        'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl',
+        clickable && 'cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm transition-all duration-150',
         className
       )}
-      {...(hover && { whileHover: { y: -2 } })}
       {...props}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
-// ─── Badge ───────────────────────────────────────────────────
+// ─── Badge ────────────────────────────────────────────────────
 interface BadgeProps {
   children: React.ReactNode;
   variant?: 'default' | 'success' | 'danger' | 'warning' | 'info' | 'purple';
@@ -199,18 +200,18 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'default', className }: BadgeProps) {
   const variants = {
-    default: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-    success: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    danger: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    info: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
-    purple: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+    default: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    success: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+    danger:  'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    warning: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    info:    'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+    purple:  'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold',
+        'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium',
         variants[variant],
         className
       )}
@@ -220,17 +221,27 @@ export function Badge({ children, variant = 'default', className }: BadgeProps) 
   );
 }
 
-// ─── Avatar ──────────────────────────────────────────────────
+// ─── Avatar ───────────────────────────────────────────────────
 interface AvatarProps {
   name: string;
   src?: string | null;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
+const AVATAR_COLORS = [
+  'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+  'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+  'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300',
+  'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
+];
+
 export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
   const sizes = {
-    sm: 'w-7 h-7 text-xs',
+    xs: 'w-6 h-6 text-[10px]',
+    sm: 'w-8 h-8 text-xs',
     md: 'w-9 h-9 text-sm',
     lg: 'w-11 h-11 text-base',
     xl: 'w-14 h-14 text-lg',
@@ -243,32 +254,24 @@ export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
     .toUpperCase()
     .slice(0, 2);
 
+  const colorIdx = name.charCodeAt(0) % AVATAR_COLORS.length;
+
   if (src) {
     return (
       <img
         src={src}
         alt={name}
-        className={cn('rounded-full object-cover', sizes[size], className)}
+        className={cn('rounded-full object-cover flex-shrink-0', sizes[size], className)}
       />
     );
   }
 
-  const colors = [
-    'from-indigo-500 to-violet-500',
-    'from-emerald-500 to-teal-500',
-    'from-rose-500 to-pink-500',
-    'from-amber-500 to-orange-500',
-    'from-sky-500 to-cyan-500',
-  ];
-
-  const colorIndex = name.charCodeAt(0) % colors.length;
-
   return (
     <div
       className={cn(
-        'rounded-full bg-gradient-to-br flex items-center justify-center font-bold text-white flex-shrink-0',
+        'rounded-full flex items-center justify-center font-semibold flex-shrink-0',
         sizes[size],
-        `bg-gradient-to-br ${colors[colorIndex]}`,
+        AVATAR_COLORS[colorIdx],
         className
       )}
     >
@@ -277,7 +280,7 @@ export function Avatar({ name, src, size = 'md', className }: AvatarProps) {
   );
 }
 
-// ─── Spinner ─────────────────────────────────────────────────
+// ─── Spinner ──────────────────────────────────────────────────
 export function Spinner({ className }: { className?: string }) {
   return (
     <svg
@@ -285,13 +288,13 @@ export function Spinner({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       fill="none"
     >
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+      <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
   );
 }
 
-// ─── Empty State ─────────────────────────────────────────────
+// ─── Empty State ──────────────────────────────────────────────
 interface EmptyStateProps {
   icon: React.ReactNode;
   title: string;
@@ -301,29 +304,25 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center justify-center py-16 text-center"
-    >
-      <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-4">
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-4">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-1">{title}</h3>
-      <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-4">{description}</p>
+      <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1">{title}</h3>
+      <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-5">{description}</p>
       {action}
-    </motion.div>
+    </div>
   );
 }
 
 // ─── Skeleton ─────────────────────────────────────────────────
 export function Skeleton({ className }: { className?: string }) {
   return (
-    <div className={cn('animate-pulse bg-slate-200 dark:bg-slate-700 rounded-lg', className)} />
+    <div className={cn('animate-pulse bg-slate-100 dark:bg-slate-800 rounded-lg', className)} />
   );
 }
 
-// ─── Modal ───────────────────────────────────────────────────
+// ─── Modal ────────────────────────────────────────────────────
 interface ModalProps {
   open: boolean;
   onClose: () => void;
@@ -345,7 +344,7 @@ export function Modal({ open, onClose, title, description, children, size = 'md'
 
   const sizes = {
     sm: 'max-w-sm',
-    md: 'max-w-lg',
+    md: 'max-w-md',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
   };
@@ -353,40 +352,43 @@ export function Modal({ open, onClose, title, description, children, size = 'md'
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
             className={cn(
-              'relative w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden',
+              'relative w-full bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden',
+              'rounded-t-2xl sm:rounded-xl',
               sizes[size]
             )}
           >
-            <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
-              {description && (
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{description}</p>
-              )}
+            <div className="px-5 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+                {description && (
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>
+                )}
+              </div>
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="px-6 py-5">{children}</div>
+            <div className="px-5 py-5">{children}</div>
           </motion.div>
         </div>
       )}
@@ -394,7 +396,7 @@ export function Modal({ open, onClose, title, description, children, size = 'md'
   );
 }
 
-// ─── Toast Context ─────────────────────────────────────────────
+// ─── Toast System ─────────────────────────────────────────────
 interface Toast {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
@@ -405,6 +407,36 @@ const ToastContext = React.createContext<{
   toast: (type: Toast['type'], message: string) => void;
 } | null>(null);
 
+const ToastIcons = {
+  success: (
+    <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  ),
+  error: (
+    <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  ),
+  warning: (
+    <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+    </svg>
+  ),
+  info: (
+    <svg className="w-4 h-4 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+};
+
+const toastBg = {
+  success: 'border-l-2 border-l-emerald-500',
+  error:   'border-l-2 border-l-red-500',
+  warning: 'border-l-2 border-l-amber-500',
+  info:    'border-l-2 border-l-sky-500',
+};
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
 
@@ -413,48 +445,39 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => [...prev, { id, type, message }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    }, 4500);
   }, []);
-
-  const icons = {
-    success: '✅',
-    error: '❌',
-    warning: '⚠️',
-    info: 'ℹ️',
-  };
-
-  const colors = {
-    success: 'border-emerald-200 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-800',
-    error: 'border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800',
-    warning: 'border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800',
-    info: 'border-sky-200 bg-sky-50 dark:bg-sky-900/20 dark:border-sky-800',
-  };
 
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 max-w-sm w-full">
-        {toasts.map((t) => (
-          <motion.div
-            key={t.id}
-            initial={{ opacity: 0, x: 100, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 100 }}
-            className={cn(
-              'flex items-center gap-3 p-4 rounded-xl border shadow-lg text-sm font-medium',
-              colors[t.type]
-            )}
-          >
-            <span>{icons[t.type]}</span>
-            <span className="text-slate-800 dark:text-slate-200 flex-1">{t.message}</span>
-            <button
-              onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
-              className="text-slate-400 hover:text-slate-600"
+      <div className="fixed bottom-20 sm:bottom-5 right-4 z-[100] flex flex-col gap-2 max-w-xs w-full pointer-events-none">
+        <AnimatePresence>
+          {toasts.map((t) => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: 8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.18 }}
+              className={cn(
+                'flex items-start gap-3 p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-lg text-sm pointer-events-auto',
+                toastBg[t.type]
+              )}
             >
-              ✕
-            </button>
-          </motion.div>
-        ))}
+              <span className="mt-0.5 flex-shrink-0">{ToastIcons[t.type]}</span>
+              <span className="text-slate-800 dark:text-slate-200 flex-1 leading-snug">{t.message}</span>
+              <button
+                onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-0.5"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );
@@ -472,25 +495,57 @@ interface ProgressBarProps {
   max?: number;
   className?: string;
   showLabel?: boolean;
+  size?: 'xs' | 'sm' | 'md';
 }
 
-export function ProgressBar({ value, max = 100, className, showLabel = false }: ProgressBarProps) {
+export function ProgressBar({ value, max = 100, className, showLabel = false, size = 'xs' }: ProgressBarProps) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
-  const color = pct >= 85 ? 'bg-emerald-500' : pct >= 75 ? 'bg-amber-500' : 'bg-red-500';
+  const color =
+    pct >= 85 ? 'bg-emerald-500' :
+    pct >= 75 ? 'bg-indigo-500'  :
+    pct >= 50 ? 'bg-amber-500'   : 'bg-red-500';
+
+  const heights = { xs: 'h-1', sm: 'h-1.5', md: 'h-2' };
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+      <div className={cn('bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden', heights[size])}>
         <motion.div
           className={cn('h-full rounded-full', color)}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
         />
       </div>
       {showLabel && (
-        <span className="text-xs text-slate-500 mt-1">{Math.round(pct)}%</span>
+        <span className="text-xs text-slate-500 mt-1 tabular-nums">{Math.round(pct)}%</span>
       )}
+    </div>
+  );
+}
+
+// ─── Divider ──────────────────────────────────────────────────
+export function Divider({ className }: { className?: string }) {
+  return <div className={cn('h-px bg-slate-100 dark:bg-slate-800', className)} />;
+}
+
+// ─── Section Header ───────────────────────────────────────────
+export function SectionHeader({
+  title,
+  description,
+  action,
+}: {
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+        {description && <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
+      </div>
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
   );
 }
