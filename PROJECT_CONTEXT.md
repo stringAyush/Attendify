@@ -612,19 +612,32 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 - **Bottom nav offset**: All page `main` has `pb-24 lg:pb-7` to account for mobile bottom nav
 - **Safe areas**: `.safe-bottom` class on `MobileBottomNav` for Capacitor notch handling
 
-### Login Page
-- **Left panel**: Dark (`slate-950`) with real product features — no fake stats
-- **Right panel**: Clean form, `h-9` inputs, show/hide password toggle
-- Error state: icon + message in bordered box (not colored background blocks)
+### Authentication Pages (Login, Signup, Forgot Password)
+- **Left panel**: Dark (`slate-950`) with real product features and the official Attendify logo — no fake stats
+- **Right panel**: Clean form, `h-9` inputs, show/hide password toggle where appropriate
+- **Branding**: Uses the official `AttendifyMark` (indigo square container with clipboard-check graphic) and `AttendifyLogo` wordmark
+- **Error state**: icon + message in bordered box (not colored background blocks)
+
+### Iconography & Emojis
+- **Eradication of Emojis**: Removed all raw emojis throughout the application (headers, badges, status notifications, buttons) and replaced them with vector iconography
+- **Unified Icon System (`components/ui/icons.tsx`)**: Consistent stroke-based SVG icons (`strokeWidth={1.75}`, `viewBox="0 0 24 24"`) wrapping Lucide-inspired clean styles
 
 ### Key Files Changed
 | File | What Changed |
 |------|-------------|
 | `globals.css` | Full rewrite — design tokens, professional CSS reset, safe-area utilities |
 | `components/ui/index.tsx` | All primitives rewritten — new sizing system, better accessibility |
-| `components/shared/Layout.tsx` | Added `MobileBottomNav`, narrowed sidebar, `headerAction` slot |
-| `components/shared/OfflineBanner.tsx` | Subtle amber-50 tinted banner instead of harsh orange |
-| `app/(auth)/auth/login/page.tsx` | Dark left panel with real features, show/hide password, clean form |
-| `app/(dashboard)/dashboard/page.tsx` | Minimal stat cards, side-by-side layout, no emoji quick actions |
-| `app/offline/page.tsx` | Compact, professional offline state |
+| `components/ui/icons.tsx` | Created unified vector icon library containing all stroke-based interface icons and the official Attendify branding/mark |
+| `components/shared/Layout.tsx` | Added `MobileBottomNav`, narrowed sidebar, integrated the official logo |
+| `components/shared/OfflineBanner.tsx` | Replaced raw SVG with unified WifiOff icon and set subtle amber tint banner |
+| `app/(auth)/auth/login/page.tsx` | Dual-panel layout, features features list with new icons, password visibility toggle |
+| `app/(auth)/auth/signup/page.tsx` | Dual-panel layout, matching branding and input styles, clean institution name helper |
+| `app/(auth)/auth/forgot-password/page.tsx` | Dual-panel layout matching Login/Signup, no checkmark emoji, clear confirmation message |
+| `app/(dashboard)/dashboard/page.tsx` | Minimal stat cards, trending icons, no emoji quick actions |
+| `app/(dashboard)/classes/page.tsx` | Replaced raw SVGs with Icon component, clean card actions, solid headers |
+| `app/(dashboard)/classes/detail/ClassDetailClient.tsx` | Unified back arrow and action triggers, solid class code containers |
+| `app/(dashboard)/students/page.tsx` | Standardized bulk import CSV dropzone design, clean action buttons, unified search icon |
+| `app/(dashboard)/students/detail/StudentDetailClient.tsx` | Replaced status emojis and text pagination markers with proper icon chevron buttons |
+| `app/offline/page.tsx` | Replaced raw SVG with new WifiOff icon |
+
 

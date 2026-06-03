@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Button, Badge, Skeleton, useToast, EmptyState, Input, Modal } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { classApi, ClassItem, SubjectItem, AttendanceSessionItem } from '@/lib/api';
 import { attendanceApi } from '@/lib/api';
 import { getApiErrorMessage, formatDate } from '@/lib/utils';
@@ -122,9 +123,7 @@ export default function ClassDetailClient() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <Icon.ArrowLeft size={16} />
           Back to Classes
         </button>
 
@@ -136,7 +135,7 @@ export default function ClassDetailClient() {
             <Card className="p-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30">
+                  <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30">
                     {cls.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -148,11 +147,7 @@ export default function ClassDetailClient() {
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/attendance?classId=${cls.id}`}>
-                    <Button size="sm" icon={
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" />
-                      </svg>
-                    }>
+                    <Button size="sm" icon={<Icon.ClipboardCheck size={16} />}>
                       Take Attendance
                     </Button>
                   </Link>
@@ -223,7 +218,7 @@ export default function ClassDetailClient() {
               </div>
             ) : sessions.length === 0 ? (
               <EmptyState
-                icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" /></svg>}
+                icon={<Icon.Clipboard size={24} />}
                 title="No sessions yet"
                 description="Take attendance to see sessions here"
               />
@@ -272,8 +267,9 @@ export default function ClassDetailClient() {
               <h3 className="font-semibold text-slate-800 dark:text-slate-200">Students in this class</h3>
               <p className="text-sm text-slate-500 mt-0.5">{cls?._count?.enrollments ?? 0} enrolled students</p>
             </div>
-            <Link href={`/students?classId=${classId}`}>
-              <Button variant="secondary" size="sm">View Students →</Button>
+            <Link href={`/students?classId=${classId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+              <span>View Students</span>
+              <Icon.ArrowRight size={14} />
             </Link>
           </div>
         </Card>
@@ -317,7 +313,7 @@ export default function ClassDetailClient() {
                       onClick={() => handleDeleteSubject(s.id)}
                       className="p-1 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <Icon.Trash2 size={16} />
                     </button>
                   </div>
                 </div>

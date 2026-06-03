@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { Button, Input } from '@/components/ui';
+import { AttendifyMark } from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
 const signupSchema = z.object({
@@ -19,23 +19,33 @@ const signupSchema = z.object({
     .min(8, 'At least 8 characters')
     .regex(/[A-Z]/, 'Include at least one uppercase letter')
     .regex(/[0-9]/, 'Include at least one number'),
-  institutionName: z.string().optional(),
+  institutionName: z.string().optional().or(z.literal('')),
 });
 type SignupForm = z.infer<typeof signupSchema>;
+
+const RULES = [
+  { label: '8+ characters', test: (p: string) => p.length >= 8 },
+  { label: 'Uppercase letter', test: (p: string) => /[A-Z]/.test(p) },
+  { label: 'One number', test: (p: string) => /[0-9]/.test(p) },
+];
 
 export default function SignupPage() {
   const { signup } = useAuthStore();
   const router = useRouter();
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignupForm>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, watch } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
   });
+
+  const watchedPassword = watch('password', '');
 
   const onSubmit = async (data: SignupForm) => {
     setError('');
     try {
-      await signup(data);
+      await signup({ ...data, institutionName: data.institutionName || undefined });
       router.push('/dashboard');
     } catch (e) {
       setError(getApiErrorMessage(e));
@@ -43,68 +53,167 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
-          {/* Logo */}
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold text-slate-900">Attendify</span>
+    <div className="min-h-screen flex bg-white dark:bg-slate-950">
+      {/* Left panel — matches login */}
+      <div className="hidden lg:flex flex-col w-[420px] xl:w-[480px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-10 relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+        <div className="relative flex items-center gap-2.5 mb-12">
+          <AttendifyMark size={28} />
+          <span className="text-white text-sm font-semibold tracking-tight">Attendify</span>
+        </div>
+        <div className="relative flex-1">
+          <h1 className="text-3xl font-bold text-white leading-tight mb-3">
+            Get started in<br />under 2 minutes
+          </h1>
+          <p className="text-slate-400 text-sm leading-relaxed mb-10">
+            Create your free account. No credit card required. Start managing attendance across your classes right away.
+          </p>
+          <div className="space-y-4">
+            {[
+              { title: 'Free forever for individuals', desc: 'No subscriptions, no hidden fees for solo educators' },
+              { title: 'Unlimited classes and sessions', desc: 'Create as many classes and attendance sessions as you need' },
+              { title: 'Android app included', desc: 'Install Attendify on your phone and work offline too' },
+            ].map((f) => (
+              <div key={f.title} className="flex items-start gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0 mt-2" />
+                <div>
+                  <p className="text-sm font-medium text-slate-200">{f.title}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="relative pt-8 border-t border-slate-800">
+          <p className="text-xs text-slate-600">Already have an account?{' '}
+            <Link href="/auth/login" className="text-slate-400 hover:text-white transition-colors">Sign in</Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center p-6">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-2 mb-8">
+            <AttendifyMark size={26} />
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">Attendify</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">Create your account</h2>
-          <p className="text-slate-500 text-sm mb-6">Start managing attendance in minutes</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Create your account</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-7">Free to use, no credit card required</p>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600"
-            >
-              {error}
-            </motion.div>
+            <div className="mb-5 flex items-start gap-2.5 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <svg className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+            </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input id="signup-name" label="Full Name" placeholder="Mr. John Smith" error={errors.name?.message} {...register('name')} />
-            <Input id="signup-email" label="Email Address" type="email" placeholder="teacher@school.com" error={errors.email?.message} {...register('email')} />
-            <Input id="signup-institution" label="Institution Name (optional)" placeholder="ABC School / College" {...register('institutionName')} />
-            <Input id="signup-password" label="Password" type="password" placeholder="Min. 8 chars, 1 uppercase, 1 number" error={errors.password?.message} {...register('password')} />
+            <Input
+              id="signup-name"
+              label="Full Name"
+              placeholder="John Smith"
+              autoComplete="name"
+              error={errors.name?.message}
+              {...register('name')}
+            />
+            <Input
+              id="signup-email"
+              label="Email"
+              type="email"
+              placeholder="you@school.edu"
+              autoComplete="email"
+              error={errors.email?.message}
+              {...register('email')}
+            />
+            <Input
+              id="signup-institution"
+              label="Institution (optional)"
+              placeholder="School or college name"
+              {...register('institutionName')}
+            />
 
-            {/* Password hints */}
-            <div className="flex gap-3 text-xs text-slate-400">
-              <span className="flex items-center gap-1"><span>8+ chars</span></span>
-              <span className="flex items-center gap-1"><span>Uppercase</span></span>
-              <span className="flex items-center gap-1"><span>Number</span></span>
+            {/* Password with strength hints */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 tracking-wide">Password</label>
+              </div>
+              <div className="relative">
+                <input
+                  id="signup-password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 8 characters"
+                  autoComplete="new-password"
+                  className={`w-full h-9 px-3 pr-9 rounded-lg border text-sm outline-none transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 ${errors.password ? 'border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20'}`}
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  {showPassword ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+              {/* Password strength indicators */}
+              <div className="flex gap-3 mt-2">
+                {RULES.map((rule) => {
+                  const ok = rule.test(watchedPassword ?? '');
+                  return (
+                    <span key={rule.label} className={`flex items-center gap-1 text-[11px] ${ok ? 'text-emerald-600' : 'text-slate-400'}`}>
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {ok
+                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          : <circle cx="12" cy="12" r="9" strokeWidth={1.5} />
+                        }
+                      </svg>
+                      {rule.label}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
 
-            <Button type="submit" loading={isSubmitting} className="w-full py-3 mt-2">
-              Create Account — Free
+            <Button type="submit" loading={isSubmitting} className="w-full mt-1">
+              Create Account
             </Button>
           </form>
 
-          <p className="text-center text-xs text-slate-400 mt-4">
-            By signing up, you agree to our{' '}
-            <Link href="#" className="text-indigo-600">Terms</Link> and{' '}
-            <Link href="#" className="text-indigo-600">Privacy Policy</Link>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-5">
+            By signing up you agree to our{' '}
+            <Link href="#" className="text-slate-500 dark:text-slate-400 hover:underline">Terms</Link>
+            {' '}and{' '}
+            <Link href="#" className="text-slate-500 dark:text-slate-400 hover:underline">Privacy Policy</Link>
           </p>
 
-          <p className="text-center text-sm text-slate-500 mt-5">
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-3">
             Already have an account?{' '}
-            <Link href="/auth/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
+            <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
               Sign in
             </Link>
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

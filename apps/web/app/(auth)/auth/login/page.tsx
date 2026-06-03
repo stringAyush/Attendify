@@ -4,10 +4,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod'
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { Button, Input } from '@/components/ui';
+import { AttendifyMark } from '@/components/ui/icons';
+import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
 const loginSchema = z.object({
@@ -16,41 +18,24 @@ const loginSchema = z.object({
 });
 type LoginForm = z.infer<typeof loginSchema>;
 
-// Feature list for left panel
 const FEATURES = [
   {
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-      </svg>
-    ),
+    icon: <Icon.ClipboardCheck size={16} />,
     title: 'One-tap attendance',
     desc: 'Mark entire classes in seconds with bulk actions',
   },
   {
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
+    icon: <Icon.FileText size={16} />,
     title: 'PDF & CSV exports',
     desc: 'Generate reports for any class, date range, or student',
   },
   {
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <Icon.WifiOff size={16} />,
     title: 'Works offline',
     desc: 'Mark attendance without internet — syncs when reconnected',
   },
   {
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-      </svg>
-    ),
+    icon: <Icon.Upload size={16} />,
     title: 'CSV bulk import',
     desc: 'Enroll hundreds of students from a spreadsheet in one step',
   },
@@ -95,7 +80,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-white dark:bg-slate-950">
-      {/* ── Left panel ── */}
+      {/* Left panel */}
       <div className="hidden lg:flex flex-col w-[420px] xl:w-[480px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-10 relative overflow-hidden">
         {/* Subtle grid pattern */}
         <div
@@ -108,11 +93,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative flex items-center gap-2.5 mb-12">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-            <svg className="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-          </div>
+          <AttendifyMark size={28} />
           <span className="text-white text-sm font-semibold tracking-tight">Attendify</span>
         </div>
 
@@ -149,16 +130,12 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ── Right panel (form) ── */}
+      {/* Right panel (form) */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.25}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
+            <AttendifyMark size={26} />
             <span className="text-sm font-semibold text-slate-900 dark:text-white">Attendify</span>
           </div>
 
@@ -168,9 +145,7 @@ export default function LoginPage() {
           {/* Error */}
           {error && (
             <div className="mb-5 flex items-start gap-2.5 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <svg className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Icon.AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
@@ -212,14 +187,9 @@ export default function LoginPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                 >
                   {showPassword ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
+                    <Icon.EyeOff size={16} />
                   ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Icon.Eye size={16} />
                   )}
                 </button>
               </div>
@@ -255,7 +225,7 @@ export default function LoginPage() {
           </button>
 
           <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6">
-            No account?{' '}
+            No account?  {' '}
             <Link href="/auth/signup" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
               Create one free
             </Link>

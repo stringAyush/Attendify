@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Button, Input, Select, Badge, EmptyState, Modal, Skeleton, useToast, Avatar, ProgressBar } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { studentApi, classApi, StudentItem, ClassItem } from '@/lib/api';
 import { getApiErrorMessage, getAttendanceBg, formatDate } from '@/lib/utils';
 import Link from 'next/link';
@@ -141,12 +142,10 @@ export default function StudentsPage() {
             <p className="text-slate-500 text-sm mt-0.5">{students.length} students enrolled</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setImportOpen(true)} icon={
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-            }>
+            <Button variant="outline" onClick={() => setImportOpen(true)} icon={<Icon.Upload size={16} />}>
               Import CSV
             </Button>
-            <Button onClick={() => setCreateOpen(true)} icon={<span className="text-lg">+</span>}>
+            <Button onClick={() => setCreateOpen(true)} icon={<Icon.Plus size={16} />}>
               Add Student
             </Button>
           </div>
@@ -159,7 +158,7 @@ export default function StudentsPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="flex-1 min-w-48"
-            leftIcon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>}
+            leftIcon={<Icon.Search size={16} />}
           />
           <Select
             options={classOptions}
@@ -199,7 +198,7 @@ export default function StudentsPage() {
                   <tr>
                     <td colSpan={6} className="py-12">
                       <EmptyState
-                        icon={<svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
+                        icon={<Icon.Users size={32} />}
                         title="No students found"
                         description={search ? 'Try adjusting your search' : 'Add students to get started'}
                         action={!search && <Button onClick={() => setCreateOpen(true)}>Add Student</Button>}
@@ -260,13 +259,13 @@ export default function StudentsPage() {
                               href={`/students/detail?id=${student.id}`}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                              <Icon.Eye size={16} />
                             </Link>
                             <button
                               onClick={() => handleDelete(student.id)}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              <Icon.Trash2 size={16} />
                             </button>
                           </div>
                         </td>
@@ -281,9 +280,13 @@ export default function StudentsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
-              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Prev</Button>
+              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+                <Icon.ChevronLeft size={16} />
+              </Button>
               <span className="text-sm text-slate-500">Page {page} of {totalPages}</span>
-              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next →</Button>
+              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+                <Icon.ChevronRight size={16} />
+              </Button>
             </div>
           )}
         </Card>
@@ -324,9 +327,7 @@ export default function StudentsPage() {
             onClick={() => fileRef.current?.click()}
             className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all"
           >
-            <svg className="w-10 h-10 text-slate-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
+            <Icon.Upload size={32} className="text-slate-300 mx-auto mb-3" />
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {importFile ? importFile.name : 'Click to upload CSV file'}
             </p>

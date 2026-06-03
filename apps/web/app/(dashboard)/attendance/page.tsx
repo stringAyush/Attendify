@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Button, Badge, Skeleton, useToast, Avatar, ProgressBar, Modal } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { attendanceApi, classApi, AttendanceSessionItem, ClassItem, AttendanceSessionWithRecords } from '@/lib/api';
 import { useAttendanceStore } from '@/lib/store/attendance.store';
 import { getApiErrorMessage, formatDate } from '@/lib/utils';
@@ -293,11 +294,11 @@ export default function AttendancePage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => { setActiveSession(null); loadSessions(); }}
-              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
             >
-              ← Back
+              <Icon.ArrowLeft size={16} />
             </button>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Mark Attendance</h2>
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Mark Attendance</h2>
           </div>
           <MarkAttendanceView session={activeSession} onClose={() => { setActiveSession(null); loadSessions(); }} />
         </div>
@@ -436,17 +437,22 @@ export default function AttendancePage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mode</label>
                 <div className="grid grid-cols-3 gap-2">
-                  {['MANUAL', 'QR', 'PIN'].map((mode) => (
+                  {([
+                    { value: 'MANUAL', label: 'Manual', Icon: Icon.PenLine },
+                    { value: 'QR',     label: 'QR Code', Icon: Icon.QrCode },
+                    { value: 'PIN',    label: 'PIN',     Icon: Icon.Lock },
+                  ] as const).map(({ value, label, Icon: ModeIcon }) => (
                     <button
-                      key={mode}
-                      onClick={() => setSessionForm(f => ({ ...f, mode }))}
-                      className={`py-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                        sessionForm.mode === mode
-                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
+                      key={value}
+                      onClick={() => setSessionForm(f => ({ ...f, mode: value }))}
+                      className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors flex items-center justify-center gap-2 ${
+                        sessionForm.mode === value
+                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
+                          : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
                       }`}
                     >
-                      {mode === 'MANUAL' ? '📝' : mode === 'QR' ? '🔳' : '🔢'} {mode}
+                      <ModeIcon size={14} />
+                      {label}
                     </button>
                   ))}
                 </div>

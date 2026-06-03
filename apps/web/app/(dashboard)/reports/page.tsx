@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Button, Badge, Skeleton, useToast } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { reportApi, classApi, ClassItem, ClassReport } from '@/lib/api';
 import { getApiErrorMessage, downloadBlob, getAttendanceBg } from '@/lib/utils';
 
@@ -73,59 +73,84 @@ export default function ReportsPage() {
       : 0
     : 0;
 
+  const reportKpis = report ? [
+    { label: 'Total Students', value: report.studentSummaries.length, icon: <Icon.Users size={14} /> },
+    { label: 'Sessions', value: report.sessions.length, icon: <Icon.ClipboardCheck size={14} /> },
+    { label: 'Avg. Attendance', value: `${avgAttendance}%`, icon: <Icon.BarChart2 size={14} /> },
+    {
+      label: 'Low Attendance',
+      value: report.studentSummaries.filter(s => s.attendancePercentage < 75).length,
+      icon: <Icon.AlertTriangle size={14} />,
+    },
+  ] : [];
+
   return (
     <DashboardLayout title="Reports">
-      <div className="space-y-6">
-        {/* Header */}
+      <div className="space-y-5">
+        {/* Page header */}
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Attendance Reports</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Generate and export detailed attendance reports</p>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Reports</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Generate and export attendance reports by class and date range</p>
         </div>
 
-        {/* Filter Card */}
-        <Card className="p-6">
-          <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 mb-4">Report Filters</h3>
+        {/* Filter card */}
+        <Card className="p-5">
+          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Report Parameters</h3>
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Class *</label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">Class <span className="text-red-400">*</span></label>
               <select
                 value={filter.classId}
                 onChange={(e) => setFilter(f => ({ ...f, classId: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-full h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20"
               >
                 <option value="">Select class</option>
                 {classes.map((c) => <option key={c.id} value={c.id}>{c.name} {c.section ?? ''}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">From Date</label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">From Date</label>
               <input
                 type="date"
                 value={filter.startDate}
                 onChange={(e) => setFilter(f => ({ ...f, startDate: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-full h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">To Date</label>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5 tracking-wide">To Date</label>
               <input
                 type="date"
                 value={filter.endDate}
                 onChange={(e) => setFilter(f => ({ ...f, endDate: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                className="w-full h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20"
               />
             </div>
           </div>
-          <div className="flex gap-3 mt-4">
-            <Button onClick={generateReport} loading={loading} icon={<span>📊</span>}>
+          <div className="flex gap-2 mt-4 flex-wrap">
+            <Button
+              onClick={generateReport}
+              loading={loading}
+              icon={<Icon.FileText size={14} />}
+            >
               Generate Report
             </Button>
             {report && (
               <>
-                <Button variant="secondary" onClick={handleExportCsv} loading={exporting === 'csv'} icon={<span>📄</span>}>
+                <Button
+                  variant="outline"
+                  onClick={handleExportCsv}
+                  loading={exporting === 'csv'}
+                  icon={<Icon.Download size={14} />}
+                >
                   Export CSV
                 </Button>
-                <Button variant="secondary" onClick={handleExportPdf} loading={exporting === 'pdf'} icon={<span>📑</span>}>
+                <Button
+                  variant="outline"
+                  onClick={handleExportPdf}
+                  loading={exporting === 'pdf'}
+                  icon={<Icon.Download size={14} />}
+                >
                   Export PDF
                 </Button>
               </>
@@ -133,83 +158,80 @@ export default function ReportsPage() {
           </div>
         </Card>
 
-        {/* Report Output */}
+        {/* Loading skeletons */}
         {loading && (
           <div className="space-y-3">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-14 rounded-2xl" />)}
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
           </div>
         )}
 
+        {/* Report output */}
         {report && !loading && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Students', value: report.studentSummaries.length, icon: '👥' },
-                { label: 'Sessions', value: report.sessions.length, icon: '📋' },
-                { label: 'Avg Attendance', value: `${avgAttendance}%`, icon: '📊' },
-                { label: 'Low Attendance', value: report.studentSummaries.filter(s => s.attendancePercentage < 75).length, icon: '⚠️' },
-              ].map((kpi, i) => (
+          <div className="space-y-4">
+            {/* KPI row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {reportKpis.map((kpi, i) => (
                 <Card key={i} className="p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{kpi.icon}</span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+                      {kpi.icon}
+                    </div>
                     <div>
-                      <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{kpi.value}</p>
-                      <p className="text-xs text-slate-400">{kpi.label}</p>
+                      <p className="text-lg font-bold text-slate-900 dark:text-slate-100 tabular-nums">{kpi.value}</p>
+                      <p className="text-[11px] text-slate-400">{kpi.label}</p>
                     </div>
                   </div>
                 </Card>
               ))}
             </div>
 
-            {/* Report Table */}
+            {/* Table */}
             <Card className="overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200">
-                  {report.class.name} {report.class.section} — Student Summary
-                </h3>
-                <span className="text-xs text-slate-400">
-                  {filter.startDate} to {filter.endDate}
-                </span>
+              <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    {report.class.name} {report.class.section} — Student Summary
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-0.5">{filter.startDate} to {filter.endDate}</p>
+                </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-slate-100 dark:border-slate-800">
-                      {['Roll No.', 'Student Name', 'Sessions', 'Present', 'Absent', 'Late', 'Attendance %'].map((h) => (
-                        <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                  <thead className="bg-slate-50 dark:bg-slate-800/50">
+                    <tr>
+                      {['Roll No.', 'Student Name', 'Sessions', 'Present', 'Absent', 'Late', 'Attendance'].map((h) => (
+                        <th key={h} className="text-left text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-5 py-3">
+                          {h}
+                        </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                    {report.studentSummaries.map((s, i) => (
-                      <motion.tr
+                    {report.studentSummaries.map((s) => (
+                      <tr
                         key={s.studentId}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: i * 0.02 }}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                        className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                       >
-                        <td className="px-4 py-3">
+                        <td className="px-5 py-3">
                           <Badge variant="default">{s.rollNumber}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-slate-800 dark:text-slate-200">{s.studentName}</td>
-                        <td className="px-4 py-3 text-sm text-slate-600">{s.totalSessions}</td>
-                        <td className="px-4 py-3 text-sm text-emerald-600 font-medium">{s.present}</td>
-                        <td className="px-4 py-3 text-sm text-red-500 font-medium">{s.absent}</td>
-                        <td className="px-4 py-3 text-sm text-amber-600 font-medium">{s.late}</td>
-                        <td className="px-4 py-3">
-                          <span className={`text-sm font-bold px-3 py-1 rounded-full ${getAttendanceBg(s.attendancePercentage)}`}>
+                        <td className="px-5 py-3 text-sm font-medium text-slate-800 dark:text-slate-200">{s.studentName}</td>
+                        <td className="px-5 py-3 text-sm text-slate-500 dark:text-slate-400 tabular-nums">{s.totalSessions}</td>
+                        <td className="px-5 py-3 text-sm font-medium text-emerald-600 tabular-nums">{s.present}</td>
+                        <td className="px-5 py-3 text-sm font-medium text-red-500 tabular-nums">{s.absent}</td>
+                        <td className="px-5 py-3 text-sm font-medium text-amber-600 tabular-nums">{s.late}</td>
+                        <td className="px-5 py-3">
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${getAttendanceBg(s.attendancePercentage)}`}>
                             {s.attendancePercentage}%
                           </span>
                         </td>
-                      </motion.tr>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             </Card>
-          </motion.div>
+          </div>
         )}
       </div>
     </DashboardLayout>

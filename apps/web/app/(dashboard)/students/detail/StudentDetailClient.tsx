@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Button, Badge, Skeleton, Avatar, ProgressBar, useToast } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { studentApi, StudentItem, AttendanceRecord } from '@/lib/api';
 import { getApiErrorMessage, formatDate, getAttendanceBg } from '@/lib/utils';
 
@@ -98,9 +99,7 @@ export default function StudentDetailClient() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <Icon.ArrowLeft size={16} />
           Back to Students
         </button>
 
@@ -141,15 +140,20 @@ export default function StudentDetailClient() {
         {summary && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Sessions', value: summary.totalSessions, color: 'text-slate-700', bg: 'bg-slate-50' },
-              { label: 'Present', value: summary.present, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-              { label: 'Absent', value: summary.absent, color: 'text-red-500', bg: 'bg-red-50' },
-              { label: 'Late', value: summary.late, color: 'text-amber-600', bg: 'bg-amber-50' },
+              { label: 'Sessions', value: summary.totalSessions, icon: <Icon.Clipboard size={16} /> },
+              { label: 'Present', value: summary.present, icon: <Icon.CheckCircle className="text-emerald-600" size={16} /> },
+              { label: 'Absent', value: summary.absent, icon: <Icon.XCircle className="text-red-500" size={16} /> },
+              { label: 'Late', value: summary.late, icon: <Icon.Clock className="text-amber-600" size={16} /> },
             ].map((stat) => (
               <motion.div key={stat.label} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                <Card className={`p-4 ${stat.bg}`}>
-                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                <Card className="p-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{stat.value}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                  </div>
                 </Card>
               </motion.div>
             ))}
@@ -161,14 +165,15 @@ export default function StudentDetailClient() {
           <Card className="p-5">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-slate-800 dark:text-slate-200">Overall Attendance</h3>
-              <span className={`text-lg font-bold px-3 py-1 rounded-full ${getAttendanceBg(summary.percentage)}`}>
+              <span className={`text-lg font-bold px-3 py-1 rounded-lg ${getAttendanceBg(summary.percentage)}`}>
                 {summary.percentage}%
               </span>
             </div>
             <ProgressBar value={summary.percentage} showLabel={false} />
             {summary.percentage < 75 && (
-              <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                ⚠️ Below 75% threshold — student may face attendance shortage
+              <p className="text-xs text-red-500 mt-2 flex items-center gap-1.5 font-medium">
+                <Icon.AlertTriangle size={14} className="text-red-500" />
+                <span>Below 75% threshold — student may face attendance shortage</span>
               </p>
             )}
           </Card>
@@ -182,11 +187,11 @@ export default function StudentDetailClient() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800">
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-3">Date</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">Subject</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3">Status</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3 hidden sm:table-cell">Notes</th>
+                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-6 py-3">Date</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3">Subject</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3">Status</th>
+                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 hidden sm:table-cell">Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -239,9 +244,13 @@ export default function StudentDetailClient() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 dark:border-slate-800">
-              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Prev</Button>
+              <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+                <Icon.ChevronLeft size={16} />
+              </Button>
               <span className="text-sm text-slate-500">Page {page} of {totalPages}</span>
-              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next →</Button>
+              <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
+                <Icon.ChevronRight size={16} />
+              </Button>
             </div>
           )}
         </Card>

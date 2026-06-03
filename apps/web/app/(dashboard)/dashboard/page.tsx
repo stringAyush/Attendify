@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/shared/Layout';
 import { Card, Skeleton, Badge, ProgressBar } from '@/components/ui';
+import * as Icon from '@/components/ui/icons';
 import { attendanceApi, DashboardStats } from '@/lib/api';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { formatDate } from '@/lib/utils';
@@ -30,9 +31,9 @@ function StatCard({
         <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
           {icon}
         </div>
-        {trend && (
-          <span className={`text-xs font-medium ${trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-500' : 'text-slate-400'}`}>
-            {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '—'}
+        {trend && trend !== 'neutral' && (
+          <span className={`flex items-center gap-0.5 text-xs font-semibold ${trend === 'up' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+            {trend === 'up' ? <Icon.TrendingUp size={14} /> : <Icon.TrendingDown size={14} />}
           </span>
         )}
       </div>
@@ -42,50 +43,6 @@ function StatCard({
     </Card>
   );
 }
-
-// Quick action links
-const QUICK_ACTIONS = [
-  {
-    href: '/attendance?create=true',
-    label: 'Take Attendance',
-    description: 'Start a new session',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-      </svg>
-    ),
-  },
-  {
-    href: '/classes?create=true',
-    label: 'New Class',
-    description: 'Create a class',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-    ),
-  },
-  {
-    href: '/students?import=true',
-    label: 'Import Students',
-    description: 'Upload via CSV',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-      </svg>
-    ),
-  },
-  {
-    href: '/reports',
-    label: 'Export Report',
-    description: 'PDF or CSV',
-    icon: (
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
-  },
-];
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -105,6 +62,33 @@ export default function DashboardPage() {
     if (h < 17) return 'Good afternoon';
     return 'Good evening';
   };
+
+  const QUICK_ACTIONS = [
+    {
+      href: '/attendance?create=true',
+      label: 'Take Attendance',
+      description: 'Start a new session',
+      icon: <Icon.ClipboardCheck size={16} />,
+    },
+    {
+      href: '/classes?create=true',
+      label: 'New Class',
+      description: 'Create a class',
+      icon: <Icon.Plus size={16} />,
+    },
+    {
+      href: '/students?import=true',
+      label: 'Import Students',
+      description: 'Upload via CSV',
+      icon: <Icon.Upload size={16} />,
+    },
+    {
+      href: '/reports',
+      label: 'Export Report',
+      description: 'PDF or CSV',
+      icon: <Icon.FileText size={16} />,
+    },
+  ];
 
   return (
     <DashboardLayout title="Dashboard">
@@ -131,24 +115,24 @@ export default function DashboardPage() {
             <StatCard
               title="Classes"
               value={stats?.totalClasses ?? 0}
-              icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>}
+              icon={<Icon.BookOpen size={16} />}
             />
             <StatCard
               title="Students"
               value={stats?.totalStudents ?? 0}
-              icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+              icon={<Icon.Users size={16} />}
             />
             <StatCard
               title="Sessions"
               value={stats?.totalSessions ?? 0}
-              icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" /></svg>}
+              icon={<Icon.ClipboardCheck size={16} />}
             />
             <StatCard
               title="Avg. Attendance"
               value={`${stats?.averageAttendance ?? 0}%`}
               sub={stats && stats.averageAttendance >= 75 ? 'On track' : 'Needs attention'}
               trend={stats ? (stats.averageAttendance >= 75 ? 'up' : 'down') : 'neutral'}
-              icon={<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>}
+              icon={<Icon.BarChart2 size={16} />}
             />
           </div>
         )}
