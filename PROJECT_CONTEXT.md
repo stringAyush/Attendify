@@ -634,10 +634,12 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 | `app/(auth)/auth/signup/page.tsx` | Dual-panel layout, matching branding and input styles, clean institution name helper |
 | `app/(auth)/auth/forgot-password/page.tsx` | Dual-panel layout matching Login/Signup, no checkmark emoji, clear confirmation message |
 | `app/(dashboard)/dashboard/page.tsx` | Minimal stat cards, trending icons, no emoji quick actions |
-| `app/(dashboard)/classes/page.tsx` | Replaced raw SVGs with Icon component, clean card actions, solid headers |
-| `app/(dashboard)/classes/detail/ClassDetailClient.tsx` | Unified back arrow and action triggers, solid class code containers |
-| `app/(dashboard)/students/page.tsx` | Standardized bulk import CSV dropzone design, clean action buttons, unified search icon |
-| `app/(dashboard)/students/detail/StudentDetailClient.tsx` | Replaced status emojis and text pagination markers with proper icon chevron buttons |
+| `app/(dashboard)/attendance/page.tsx` | Redesigned Attendance page and student marking touch targets using custom Select, Input, and Modal primitives |
+| `app/(dashboard)/classes/page.tsx` | Redesigned Classes list card interactions, academic years list, and modals |
+| `app/(dashboard)/classes/detail/ClassDetailClient.tsx` | Polished Class Detail visual layout, subject management, and recent session links |
+| `app/(dashboard)/students/page.tsx` | Standardized bulk import CSV dropzone design, clean action buttons, unified table spacing and search |
+| `app/(dashboard)/students/detail/StudentDetailClient.tsx` | Replaced status emojis and text pagination markers with proper icon chevron buttons and structured stats |
 | `app/offline/page.tsx` | Replaced raw SVG with new WifiOff icon |
+
 
 

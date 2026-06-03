@@ -3,26 +3,24 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardLayout } from '@/components/shared/Layout';
-import { Card, Button, Badge, Skeleton, useToast, Avatar, ProgressBar, Modal } from '@/components/ui';
+import { Card, Button, Badge, Skeleton, useToast, Avatar, ProgressBar, Modal, Select, Input } from '@/components/ui';
 import * as Icon from '@/components/ui/icons';
 import { attendanceApi, classApi, AttendanceSessionItem, ClassItem, AttendanceSessionWithRecords } from '@/lib/api';
 import { useAttendanceStore } from '@/lib/store/attendance.store';
 import { getApiErrorMessage, formatDate } from '@/lib/utils';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 const STATUS_OPTIONS = [
-  { value: 'PRESENT', label: 'P', color: 'bg-emerald-500 text-white border-emerald-500', bg: 'bg-emerald-50 border-emerald-300 text-emerald-700' },
-  { value: 'ABSENT', label: 'A', color: 'bg-red-500 text-white border-red-500', bg: 'bg-red-50 border-red-300 text-red-700' },
-  { value: 'LATE', label: 'L', color: 'bg-amber-500 text-white border-amber-500', bg: 'bg-amber-50 border-amber-300 text-amber-700' },
-  { value: 'HALF_DAY', label: 'H', color: 'bg-sky-500 text-white border-sky-500', bg: 'bg-sky-50 border-sky-300 text-sky-700' },
+  { value: 'PRESENT', label: 'P', color: 'bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-600 dark:border-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+  { value: 'ABSENT', label: 'A', color: 'bg-red-600 border-red-600 text-white dark:bg-red-650 dark:border-red-650', bg: 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400' },
+  { value: 'LATE', label: 'L', color: 'bg-amber-600 border-amber-600 text-white dark:bg-amber-600 dark:border-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/30 text-amber-700 dark:text-amber-400' },
+  { value: 'HALF_DAY', label: 'H', color: 'bg-sky-600 border-sky-600 text-white dark:bg-sky-600 dark:border-sky-600', bg: 'bg-sky-50 dark:bg-sky-950/20 border-sky-200 dark:border-sky-900/30 text-sky-700 dark:text-sky-400' },
 ];
 
 // ─── Mark Attendance View ─────────────────────────────────────
 function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWithRecords; onClose: () => void }) {
   const { toast } = useToast();
   const { attendanceMap, markStudent, markAll, saveAttendance, isDirty, isMarkingBulk, getTotals } = useAttendanceStore();
-  const router = useRouter();
   const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const students = session.records.map((r) => r.student).filter(Boolean);
@@ -37,7 +35,7 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
   const handleSave = async () => {
     try {
       await saveAttendance();
-      toast('success', 'Attendance saved successfully');
+      toast('success', 'Draft attendance saved');
     } catch (e) {
       toast('error', getApiErrorMessage(e));
     }
@@ -54,7 +52,7 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
         await saveAttendance();
       }
       await attendanceApi.finalizeSession(session.id);
-      toast('success', 'Session finalized');
+      toast('success', 'Attendance session finalized and locked');
       setShowFinalizeConfirm(false);
       onClose();
     } catch (e) {
@@ -68,12 +66,12 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
 
   return (
     <div className="space-y-6">
-      {/* Session Info */}
-      <Card className="p-5">
-        <div className="flex flex-wrap items-center gap-3 justify-between">
+      {/* Session Info card */}
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
           <div>
-            <h3 className="font-bold text-slate-900 dark:text-slate-100">{session.subject?.name}</h3>
-            <p className="text-sm text-slate-500">{session.class?.name} · {formatDate(session.date)}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">{session.subject?.name}</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{session.class?.name} · {formatDate(session.date)}</p>
           </div>
           <div className="flex gap-2 flex-wrap items-center">
             <Badge variant="success">{totals.present} Present</Badge>
@@ -87,34 +85,39 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
           </div>
         </div>
 
-        {/* Progress */}
-        <div className="mt-3">
+        {/* Attendance progress bar */}
+        <div className="mt-5">
+          <div className="flex justify-between items-center text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <span>Presence Rate</span>
+            <span>{totals.total > 0 ? Math.round((totals.present / totals.total) * 100) : 0}%</span>
+          </div>
           <ProgressBar
             value={totals.total > 0 ? (totals.present / totals.total) * 100 : 0}
-            showLabel
           />
         </div>
 
-        {/* Bulk Actions */}
-        <div className="flex gap-2 mt-3 flex-wrap">
-          <span className="text-xs text-slate-400 self-center">Mark all as:</span>
-          {STATUS_OPTIONS.map((s) => (
-            <button
-              key={s.value}
-              disabled={session.isFinalized}
-              onClick={() => markAll(s.value as 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY', students.map((st) => st!.id))}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold border-2 transition-all ${s.bg} ${
-                session.isFinalized ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {s.label === 'P' ? 'Present' : s.label === 'A' ? 'Absent' : s.label === 'L' ? 'Late' : 'Half Day'}
-            </button>
-          ))}
+        {/* Bulk quick actions */}
+        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Mark All As:</span>
+          <div className="flex gap-2 flex-wrap">
+            {STATUS_OPTIONS.map((s) => (
+              <button
+                key={s.value}
+                disabled={session.isFinalized}
+                onClick={() => markAll(s.value as 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY', students.map((st) => st!.id))}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all active:scale-95 ${s.bg} ${
+                  session.isFinalized ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-xs'
+                }`}
+              >
+                {s.label === 'P' ? 'Present' : s.label === 'A' ? 'Absent' : s.label === 'L' ? 'Late' : 'Half Day'}
+              </button>
+            ))}
+          </div>
         </div>
       </Card>
 
-      {/* Student Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* Student Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnimatePresence>
           {students.map((student, i) => {
             if (!student) return null;
@@ -123,27 +126,29 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
             return (
               <motion.div
                 key={student.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.02 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.015 }}
               >
-                <Card className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
+                <Card className="p-5 flex flex-col justify-between h-full">
+                  <div className="flex items-center gap-3.5 mb-4">
                     <Avatar name={student.name} size="sm" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{student.name}</p>
-                      <p className="text-xs text-slate-400">Roll: {student.rollNumber}</p>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate">{student.name}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">Roll: {student.rollNumber}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-1.5">
+                  <div className="grid grid-cols-4 gap-2">
                     {STATUS_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
                         disabled={session.isFinalized}
                         onClick={() => markStudent(student.id, opt.value as 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY')}
-                        className={`py-2 rounded-xl text-xs font-bold border-2 transition-all duration-100 ${
-                          currentStatus === opt.value ? opt.color : 'border-slate-200 dark:border-slate-700 text-slate-400 hover:border-slate-300'
-                        } ${session.isFinalized ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`h-10 rounded-lg text-sm font-extrabold border transition-all active:scale-95 duration-100 ${
+                          currentStatus === opt.value
+                            ? `${opt.color} shadow-sm`
+                            : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900'
+                        } ${session.isFinalized ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                       >
                         {opt.label}
                       </button>
@@ -156,34 +161,37 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
         </AnimatePresence>
       </div>
 
-      {/* Save Bar */}
+      {/* Save Draft Floating Bar */}
       {isDirty && !session.isFinalized && (
         <motion.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl z-30 border border-slate-700"
+          className="fixed bottom-24 sm:bottom-6 left-1/2 -translate-x-1/2 bg-slate-950 dark:bg-slate-900 text-white rounded-xl px-5 py-3.5 flex items-center gap-4 shadow-xl z-30 border border-slate-800"
         >
-          <span className="text-sm font-medium">Unsaved changes</span>
-          <Button size="sm" variant="secondary" onClick={handleSave} loading={isMarkingBulk} className="bg-white text-slate-900 hover:bg-slate-100">
-            Save Draft
-          </Button>
-          <Button size="sm" onClick={handleFinalize} loading={isMarkingBulk || isFinalizing}>
-            Save & Finalize
-          </Button>
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Unsaved changes</span>
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" onClick={handleSave} loading={isMarkingBulk} className="bg-slate-800 text-white hover:bg-slate-700 border-none">
+              Save Draft
+            </Button>
+            <Button size="sm" onClick={handleFinalize} loading={isMarkingBulk || isFinalizing}>
+              Finalize
+            </Button>
+          </div>
         </motion.div>
       )}
 
-      {/* Confirmation Modal */}
+      {/* Finalize Confirmation Modal */}
       <Modal
         open={showFinalizeConfirm}
         onClose={() => setShowFinalizeConfirm(false)}
-        title="Finalize Attendance Session"
+        title="Lock Attendance Session"
+        description="Are you sure you want to finalize this session?"
       >
-        <div className="p-6 space-y-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Are you sure you want to finalize this session? Once finalized, student attendance records will be locked and no further edits will be allowed.
+        <div className="space-y-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            Once finalized, student attendance records will be locked permanently. No further changes can be made.
           </p>
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="flex justify-end gap-3 pt-2">
             <Button variant="secondary" onClick={() => setShowFinalizeConfirm(false)}>
               Cancel
             </Button>
@@ -201,7 +209,6 @@ function MarkAttendanceView({ session, onClose }: { session: AttendanceSessionWi
 export default function AttendancePage() {
   const { toast } = useToast();
   const { initSession } = useAttendanceStore();
-  const router = useRouter();
   const [sessions, setSessions] = useState<AttendanceSessionItem[]>([]);
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,7 +270,7 @@ export default function AttendancePage() {
 
   const handleCreateSession = async () => {
     if (!sessionForm.classId || !sessionForm.subjectId || !sessionForm.date) {
-      toast('error', 'Please fill all required fields');
+      toast('error', 'Please select class, subject, and date');
       return;
     }
     setCreating(true);
@@ -277,7 +284,7 @@ export default function AttendancePage() {
       });
       const session = res.data as AttendanceSessionItem;
       setNewSessionModal(false);
-      toast('success', 'Session created! Taking attendance now...');
+      toast('success', 'Attendance session created');
       await openSession(session.id);
       loadSessions();
     } catch (e) {
@@ -287,18 +294,23 @@ export default function AttendancePage() {
     }
   };
 
+  const classOptions = [
+    { value: '', label: 'All Classes' },
+    ...classes.map((c) => ({ value: c.id, label: `${c.name} ${c.section ?? ''}`.trim() })),
+  ];
+
   if (activeSession) {
     return (
       <DashboardLayout title="Mark Attendance">
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="flex items-center gap-3">
             <button
               onClick={() => { setActiveSession(null); loadSessions(); }}
-              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
             >
-              <Icon.ArrowLeft size={16} />
+              <Icon.ArrowLeft size={18} />
             </button>
-            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Mark Attendance</h2>
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">Mark Attendance</h2>
           </div>
           <MarkAttendanceView session={activeSession} onClose={() => { setActiveSession(null); loadSessions(); }} />
         </div>
@@ -312,38 +324,44 @@ export default function AttendancePage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Attendance Sessions</h2>
-            <p className="text-slate-500 text-sm">Manage and take class attendance</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">Attendance Sessions</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">Manage and take class attendance</p>
           </div>
-          <Button onClick={() => setNewSessionModal(true)} icon={<span className="text-lg">+</span>}>
+          <Button onClick={() => setNewSessionModal(true)} icon={<Icon.Plus size={16} />}>
             New Session
           </Button>
         </div>
 
-        {/* Filter */}
-        <select
-          value={filterClass}
-          onChange={(e) => setFilterClass(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
-        >
-          <option value="">All Classes</option>
-          {classes.map((c) => (
-            <option key={c.id} value={c.id}>{c.name} {c.section ?? ''}</option>
-          ))}
-        </select>
+        {/* Filters Panel */}
+        <Card className="p-4 max-w-sm">
+          <Select
+            label="Filter by Class"
+            value={filterClass}
+            onChange={(e) => setFilterClass(e.target.value)}
+            options={classOptions}
+          />
+        </Card>
 
         {/* Sessions Grid */}
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-36 rounded-2xl" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-44 rounded-2xl" />)}
           </div>
         ) : sessions.length === 0 ? (
           <Card className="py-16 text-center">
-            <p className="text-slate-400 text-sm">No sessions found. Create one to start taking attendance.</p>
-            <Button className="mt-4" onClick={() => setNewSessionModal(true)}>Create Session</Button>
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-400 mx-auto">
+                <Icon.ClipboardCheck size={20} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">No sessions recorded</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Create an attendance session to start tracking presence.</p>
+              </div>
+              <Button onClick={() => setNewSessionModal(true)}>Create Session</Button>
+            </div>
           </Card>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {sessions.map((session, i) => {
               const pct = session.stats
                 ? session.stats.total > 0
@@ -353,31 +371,29 @@ export default function AttendancePage() {
               return (
                 <motion.div
                   key={session.id}
-                  initial={{ opacity: 0, y: 15 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: i * 0.025 }}
                 >
-                  <Card className="p-5 hover:shadow-sm transition-all duration-150 cursor-pointer group" clickable onClick={() => openSession(session.id)}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white">
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2" />
-                        </svg>
+                  <Card className="p-5 hover:shadow-md transition-all duration-150 cursor-pointer group" clickable onClick={() => openSession(session.id)}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/30 flex items-center justify-center text-indigo-650 dark:text-indigo-400">
+                        <Icon.ClipboardCheck size={18} />
                       </div>
-                      <div className="flex gap-1">
-                        {session.isFinalized && <Badge variant="purple">Final</Badge>}
+                      <div className="flex gap-1.5">
+                        {session.isFinalized && <Badge variant="purple">Finalized</Badge>}
                         <Badge variant={pct >= 75 ? 'success' : pct >= 50 ? 'warning' : 'danger'}>{pct}%</Badge>
                       </div>
                     </div>
-                    <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 transition-colors">
                       {session.subject?.name}
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">{session.class?.name} {session.class?.section}</p>
-                    <p className="text-xs text-slate-400">{formatDate(session.date)}</p>
-                    <div className="mt-3">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 font-semibold uppercase tracking-wider">{session.class?.name} {session.class?.section ? `· Sec ${session.class.section}` : ''}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{formatDate(session.date)}</p>
+                    <div className="mt-4 pt-3 border-t border-slate-50 dark:border-slate-800/40">
                       <ProgressBar value={pct} />
-                      <p className="text-xs text-slate-400 mt-1">
-                        {session.stats?.present ?? 0}/{session.stats?.total ?? 0} present
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">
+                        {session.stats?.present ?? 0} of {session.stats?.total ?? 0} students present
                       </p>
                     </div>
                   </Card>
@@ -389,82 +405,70 @@ export default function AttendancePage() {
       </div>
 
       {/* New Session Modal */}
-      {newSessionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setNewSessionModal(false)} />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800"
-          >
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-4">Create Attendance Session</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Class *</label>
-                <select
-                  value={sessionForm.classId}
-                  onChange={(e) => setSessionForm(f => ({ ...f, classId: e.target.value, subjectId: '' }))}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+      <Modal
+        open={newSessionModal}
+        onClose={() => setNewSessionModal(false)}
+        title="Create Attendance Session"
+      >
+        <div className="space-y-4">
+          <Select
+            label="Class *"
+            value={sessionForm.classId}
+            onChange={(e) => setSessionForm(f => ({ ...f, classId: e.target.value, subjectId: '' }))}
+            options={[
+              { value: '', label: 'Select Class' },
+              ...classes.map((c) => ({ value: c.id, label: `${c.name} ${c.section ?? ''}`.trim() }))
+            ]}
+          />
+          <Select
+            label="Subject *"
+            value={sessionForm.subjectId}
+            onChange={(e) => setSessionForm(f => ({ ...f, subjectId: e.target.value }))}
+            options={[
+              { value: '', label: 'Select Subject' },
+              ...subjects.map((s) => ({ value: s.id, label: s.name }))
+            ]}
+            disabled={!subjects.length}
+          />
+          {sessionForm.classId && !subjects.length && (
+            <p className="text-xs text-amber-600 font-semibold">No subjects registered for this class. Add subjects first.</p>
+          )}
+          <Input
+            label="Date *"
+            type="date"
+            value={sessionForm.date}
+            onChange={(e) => setSessionForm(f => ({ ...f, date: e.target.value }))}
+          />
+          <div>
+            <label className="block text-xs font-semibold text-slate-650 dark:text-slate-400 mb-1.5 tracking-wide">Method Mode</label>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: 'MANUAL', label: 'Manual', Icon: Icon.PenLine },
+                { value: 'QR',     label: 'QR Code', Icon: Icon.QrCode },
+                { value: 'PIN',    label: 'PIN Code', Icon: Icon.Lock },
+              ] as const).map(({ value, label, Icon: ModeIcon }) => (
+                <button
+                  key={value}
+                  onClick={() => setSessionForm(f => ({ ...f, mode: value }))}
+                  className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-all flex items-center justify-center gap-1.5 ${
+                    sessionForm.mode === value
+                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 font-bold'
+                      : 'border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900'
+                  }`}
                 >
-                  <option value="">Select class</option>
-                  {classes.map((c) => <option key={c.id} value={c.id}>{c.name} {c.section ?? ''}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Subject *</label>
-                <select
-                  value={sessionForm.subjectId}
-                  onChange={(e) => setSessionForm(f => ({ ...f, subjectId: e.target.value }))}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
-                  disabled={!subjects.length}
-                >
-                  <option value="">Select subject</option>
-                  {subjects.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
-                {sessionForm.classId && !subjects.length && (
-                  <p className="text-xs text-amber-500 mt-1">No subjects found. Add subjects to this class first.</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Date *</label>
-                <input
-                  type="date"
-                  value={sessionForm.date}
-                  onChange={(e) => setSessionForm(f => ({ ...f, date: e.target.value }))}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mode</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {([
-                    { value: 'MANUAL', label: 'Manual', Icon: Icon.PenLine },
-                    { value: 'QR',     label: 'QR Code', Icon: Icon.QrCode },
-                    { value: 'PIN',    label: 'PIN',     Icon: Icon.Lock },
-                  ] as const).map(({ value, label, Icon: ModeIcon }) => (
-                    <button
-                      key={value}
-                      onClick={() => setSessionForm(f => ({ ...f, mode: value }))}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors flex items-center justify-center gap-2 ${
-                        sessionForm.mode === value
-                          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'
-                      }`}
-                    >
-                      <ModeIcon size={14} />
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  <ModeIcon size={14} />
+                  {label}
+                </button>
+              ))}
             </div>
-            <div className="flex gap-3 mt-6">
-              <Button variant="secondary" className="flex-1" onClick={() => setNewSessionModal(false)}>Cancel</Button>
-              <Button className="flex-1" loading={creating} onClick={handleCreateSession}>Create & Mark</Button>
-            </div>
-          </motion.div>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <Button variant="secondary" className="flex-1" onClick={() => setNewSessionModal(false)}>Cancel</Button>
+            <Button className="flex-1" loading={creating} onClick={handleCreateSession}>Create Session</Button>
+          </div>
         </div>
-      )}
+      </Modal>
     </DashboardLayout>
   );
 }

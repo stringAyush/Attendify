@@ -141,8 +141,8 @@ export default function ClassesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">My Classes</h2>
-            <p className="text-slate-500 text-sm mt-0.5">Manage your classes and subjects</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">My Classes</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">Manage your classes and subjects</p>
           </div>
           <Button onClick={() => setCreateOpen(true)} icon={<Icon.Plus size={16} />}>
             Create Class
@@ -159,56 +159,58 @@ export default function ClassesPage() {
 
         {/* Classes Grid */}
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-40 rounded-2xl" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-44 rounded-2xl" />)}
           </div>
         ) : classes.length === 0 ? (
           <EmptyState
-            icon={<Icon.BookOpen size={32} />}
+            icon={<Icon.BookOpen size={32} className="text-slate-400 dark:text-slate-500" />}
             title="No classes yet"
             description="Create your first class to start managing attendance"
             action={<Button onClick={() => setCreateOpen(true)}>Create Class</Button>}
           />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {classes.map((cls, i) => (
               <motion.div
                 key={cls.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: i * 0.025 }}
               >
-                <Card className="p-5 hover:shadow-md transition-all duration-200 group">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-200 dark:shadow-indigo-900/30">
-                      {cls.name.slice(0, 2).toUpperCase()}
+                <Card className="p-5 hover:shadow-md transition-all duration-200 group flex flex-col justify-between h-full">
+                  <div>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 flex items-center justify-center text-indigo-650 dark:text-indigo-400 font-bold text-sm shadow-xs">
+                        {cls.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => openSubjectModal(cls)}
+                          className="p-2 rounded-lg text-slate-400 hover:text-indigo-650 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+                          title="Manage subjects"
+                        >
+                          <Icon.BookOpen size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cls.id)}
+                          className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          title="Delete class"
+                        >
+                          <Icon.Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => openSubjectModal(cls)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
-                        title="Manage subjects"
-                      >
-                        <Icon.BookOpen size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(cls.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        title="Delete class"
-                      >
-                        <Icon.Trash2 size={16} />
-                      </button>
-                    </div>
+
+                    <Link href={`/classes/detail?id=${cls.id}`}>
+                      <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-indigo-650 transition-colors">
+                        {cls.name} {cls.section && <span className="text-slate-400 dark:text-slate-500 font-normal">· {cls.section}</span>}
+                      </h3>
+                    </Link>
+                    <p className="text-xs text-slate-400 dark:text-slate-550 mt-0.5 font-medium">{cls.academicYear} {cls.semester && `· ${cls.semester}`}</p>
                   </div>
 
-                  <Link href={`/classes/detail?id=${cls.id}`}>
-                    <h3 className="font-bold text-slate-900 dark:text-slate-100 hover:text-indigo-600 transition-colors">
-                      {cls.name} {cls.section && <span className="text-slate-400">· {cls.section}</span>}
-                    </h3>
-                  </Link>
-                  <p className="text-xs text-slate-400 mt-0.5">{cls.academicYear} {cls.semester && `· ${cls.semester}`}</p>
-
-                  <div className="flex gap-2 mt-3 flex-wrap">
+                  <div className="flex gap-1.5 mt-4 pt-3 border-t border-slate-50 dark:border-slate-800/40 flex-wrap">
                     <Badge variant="info">{cls._count?.enrollments ?? 0} students</Badge>
                     <Badge variant="purple">{cls._count?.sessions ?? 0} sessions</Badge>
                     <Badge variant="default">{cls.subjects?.length ?? 0} subjects</Badge>
@@ -232,7 +234,7 @@ export default function ClassesPage() {
             {...register('academicYear')}
           />
           <Input label="Semester (optional)" placeholder="e.g., First Semester" error={errors.semester?.message} {...register('semester')} />
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="secondary" className="flex-1" onClick={() => { setCreateOpen(false); reset(); }}>Cancel</Button>
             <Button type="submit" loading={submitting} className="flex-1">Create Class</Button>
           </div>
@@ -266,7 +268,7 @@ export default function ClassesPage() {
               <p className="text-sm text-slate-400 text-center py-6">No subjects added yet</p>
             ) : (
               subjectModal?.subjects.map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div key={s.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl">
                   <div>
                     <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
                     {s.code && <span className="text-xs text-slate-400 ml-2">({s.code})</span>}

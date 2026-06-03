@@ -81,7 +81,7 @@ export default function StudentDetailClient() {
   if (!studentId) {
     return (
       <DashboardLayout title="Student Profile">
-        <Card className="p-6 text-center">
+        <Card className="p-6 text-center max-w-md mx-auto space-y-4">
           <p className="text-slate-500">No student ID provided.</p>
           <Link href="/students" className="mt-4 inline-block">
             <Button size="sm">Go back to Students</Button>
@@ -97,7 +97,7 @@ export default function StudentDetailClient() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors"
         >
           <Icon.ArrowLeft size={16} />
           Back to Students
@@ -107,27 +107,27 @@ export default function StudentDetailClient() {
         {loading ? (
           <Skeleton className="h-40 rounded-2xl" />
         ) : student && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-start gap-5">
                 <Avatar name={student.name} src={student.avatar} size="xl" />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{student.name}</h2>
-                      <p className="text-slate-500 text-sm mt-0.5">Roll #{student.rollNumber}</p>
-                      {student.email && <p className="text-slate-400 text-xs mt-0.5">{student.email}</p>}
-                      {student.phone && <p className="text-slate-400 text-xs">{student.phone}</p>}
+                      <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-550 tracking-tight">{student.name}</h2>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Roll #{student.rollNumber}</p>
+                      {student.email && <p className="text-slate-400 dark:text-slate-500 text-xs mt-0.5 font-medium">{student.email}</p>}
+                      {student.phone && <p className="text-slate-400 dark:text-slate-500 text-xs font-medium">{student.phone}</p>}
                     </div>
                     <div className="flex gap-2">
                       <Badge variant={student.isActive ? 'success' : 'danger'}>
                         {student.isActive ? 'Active' : 'Inactive'}
                       </Badge>
-                      <Button variant="danger" size="sm" onClick={handleDelete}>Remove</Button>
+                      <Button variant="danger" size="sm" onClick={handleDelete}>Remove Student</Button>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-400 mt-2">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-3 font-medium">
                     Enrolled {formatDate(student.createdAt)}
                   </p>
                 </div>
@@ -138,21 +138,21 @@ export default function StudentDetailClient() {
 
         {/* Summary Stats */}
         {summary && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Sessions', value: summary.totalSessions, icon: <Icon.Clipboard size={16} /> },
-              { label: 'Present', value: summary.present, icon: <Icon.CheckCircle className="text-emerald-600" size={16} /> },
-              { label: 'Absent', value: summary.absent, icon: <Icon.XCircle className="text-red-500" size={16} /> },
-              { label: 'Late', value: summary.late, icon: <Icon.Clock className="text-amber-600" size={16} /> },
-            ].map((stat) => (
-              <motion.div key={stat.label} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                <Card className="p-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+              { label: 'Sessions', value: summary.totalSessions, icon: <Icon.Clipboard size={18} /> },
+              { label: 'Present', value: summary.present, icon: <Icon.CheckCircle className="text-emerald-600 dark:text-emerald-400" size={18} /> },
+              { label: 'Absent', value: summary.absent, icon: <Icon.XCircle className="text-red-650 dark:text-red-400" size={18} /> },
+              { label: 'Late', value: summary.late, icon: <Icon.Clock className="text-amber-600 dark:text-amber-400" size={18} /> },
+            ].map((stat, i) => (
+              <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.025 }}>
+                <Card className="p-5 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
                     {stat.icon}
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{stat.value}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+                    <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
                   </div>
                 </Card>
               </motion.div>
@@ -162,17 +162,17 @@ export default function StudentDetailClient() {
 
         {/* Attendance % Card */}
         {summary && (
-          <Card className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200">Overall Attendance</h3>
-              <span className={`text-lg font-bold px-3 py-1 rounded-lg ${getAttendanceBg(summary.percentage)}`}>
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">Overall Attendance</h3>
+              <span className={`text-sm font-extrabold px-3 py-1 rounded-full ${getAttendanceBg(summary.percentage)}`}>
                 {summary.percentage}%
               </span>
             </div>
-            <ProgressBar value={summary.percentage} showLabel={false} />
+            <ProgressBar value={summary.percentage} />
             {summary.percentage < 75 && (
-              <p className="text-xs text-red-500 mt-2 flex items-center gap-1.5 font-medium">
-                <Icon.AlertTriangle size={14} className="text-red-500" />
+              <p className="text-xs text-red-600 dark:text-red-450 mt-3 flex items-center gap-1.5 font-bold">
+                <Icon.AlertTriangle size={14} />
                 <span>Below 75% threshold — student may face attendance shortage</span>
               </p>
             )}
@@ -180,33 +180,33 @@ export default function StudentDetailClient() {
         )}
 
         {/* Attendance Records */}
-        <Card className="overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-            <h3 className="font-semibold text-slate-800 dark:text-slate-200">Attendance History</h3>
+        <Card className="p-0 overflow-hidden border border-slate-200 dark:border-slate-800">
+          <div className="px-6 py-4.5 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Attendance History</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-6 py-3">Date</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3">Subject</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3">Status</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 hidden sm:table-cell">Notes</th>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 text-[10px] font-bold tracking-wider uppercase">
+                  <th className="text-left px-6 py-3.5">Date</th>
+                  <th className="text-left px-4 py-3.5">Subject</th>
+                  <th className="text-left px-4 py-3.5">Status</th>
+                  <th className="text-left px-4 py-3.5 hidden sm:table-cell">Notes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i}>
-                      <td className="px-6 py-3"><Skeleton className="h-4 w-24" /></td>
-                      <td className="px-4 py-3"><Skeleton className="h-4 w-32" /></td>
-                      <td className="px-4 py-3"><Skeleton className="h-5 w-16 rounded-full" /></td>
-                      <td className="px-4 py-3 hidden sm:table-cell"><Skeleton className="h-4 w-20" /></td>
+                      <td className="px-6 py-3.5"><Skeleton className="h-4 w-24" /></td>
+                      <td className="px-4 py-3.5"><Skeleton className="h-4 w-32" /></td>
+                      <td className="px-4 py-3.5"><Skeleton className="h-5 w-16 rounded-full" /></td>
+                      <td className="px-4 py-3.5 hidden sm:table-cell"><Skeleton className="h-4 w-20" /></td>
                     </tr>
                   ))
                 ) : records.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-10 text-center text-sm text-slate-400">
+                    <td colSpan={4} className="py-12 text-center text-sm text-slate-400">
                       No attendance records found
                     </td>
                   </tr>
@@ -218,19 +218,19 @@ export default function StudentDetailClient() {
                         key={rec.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: i * 0.02 }}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                        transition={{ delay: i * 0.015 }}
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
                       >
-                        <td className="px-6 py-3 text-sm text-slate-600 dark:text-slate-400">
+                        <td className="px-6 py-3.5 text-sm font-medium text-slate-600 dark:text-slate-400">
                           {formatDate(rec.markedAt)}
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-800 dark:text-slate-200">
+                        <td className="px-4 py-3.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
                           —
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-3.5">
                           <Badge variant={badge.variant}>{badge.label}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-400 hidden sm:table-cell">
+                        <td className="px-4 py-3.5 text-sm text-slate-400 dark:text-slate-500 hidden sm:table-cell">
                           {rec.notes ?? '—'}
                         </td>
                       </motion.tr>
@@ -247,7 +247,7 @@ export default function StudentDetailClient() {
               <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
                 <Icon.ChevronLeft size={16} />
               </Button>
-              <span className="text-sm text-slate-500">Page {page} of {totalPages}</span>
+              <span className="text-xs font-semibold text-slate-500">Page {page} of {totalPages}</span>
               <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
                 <Icon.ChevronRight size={16} />
               </Button>

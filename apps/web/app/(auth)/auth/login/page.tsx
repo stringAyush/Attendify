@@ -13,31 +13,31 @@ import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
 const loginSchema = z.object({
-  email: z.string().email('Enter a valid email'),
+  email: z.string().email('Enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 type LoginForm = z.infer<typeof loginSchema>;
 
 const FEATURES = [
   {
-    icon: <Icon.ClipboardCheck size={16} />,
+    icon: <Icon.ClipboardCheck size={18} className="text-indigo-400" />,
     title: 'One-tap attendance',
-    desc: 'Mark entire classes in seconds with bulk actions',
+    desc: 'Mark entire classes in seconds with smart bulk actions and shortcuts.',
   },
   {
-    icon: <Icon.FileText size={16} />,
-    title: 'PDF & CSV exports',
-    desc: 'Generate reports for any class, date range, or student',
+    icon: <Icon.FileText size={18} className="text-indigo-400" />,
+    title: 'Professional reports',
+    desc: 'Generate instantly exportable PDF or CSV attendance sheets for any class.',
   },
   {
-    icon: <Icon.WifiOff size={16} />,
-    title: 'Works offline',
-    desc: 'Mark attendance without internet — syncs when reconnected',
+    icon: <Icon.WifiOff size={18} className="text-indigo-400" />,
+    title: 'Works 100% offline',
+    desc: 'Record data without internet. Automatic sync when you reconnect.',
   },
   {
-    icon: <Icon.Upload size={16} />,
-    title: 'CSV bulk import',
-    desc: 'Enroll hundreds of students from a spreadsheet in one step',
+    icon: <Icon.Upload size={18} className="text-indigo-400" />,
+    title: 'CSV bulk enrollment',
+    desc: 'Add hundreds of students from your school roster in one single upload.',
   },
 ];
 
@@ -79,12 +79,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950">
-      {/* Left panel */}
-      <div className="hidden lg:flex flex-col w-[420px] xl:w-[480px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-10 relative overflow-hidden">
+    <div className="min-h-screen flex bg-white dark:bg-slate-950 font-sans">
+      {/* Left panel — engaging sidebar */}
+      <div className="hidden lg:flex flex-col w-[440px] xl:w-[500px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-12 relative overflow-hidden border-r border-slate-900">
         {/* Subtle grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
             backgroundSize: '32px 32px',
@@ -92,30 +92,30 @@ export default function LoginPage() {
         />
 
         {/* Logo */}
-        <div className="relative flex items-center gap-2.5 mb-12">
-          <AttendifyMark size={28} />
-          <span className="text-white text-sm font-semibold tracking-tight">Attendify</span>
+        <div className="relative flex items-center gap-3 mb-16">
+          <AttendifyMark size={32} />
+          <span className="text-white text-base font-bold tracking-tight">Attendify</span>
         </div>
 
         {/* Headline */}
         <div className="relative flex-1">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-3">
-            Attendance management<br />built for educators
+          <h1 className="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Attendance tracking<br />made simple.
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-10">
-            Track attendance across classes, generate reports, and get insights — from the web or your Android device.
+          <p className="text-slate-400 text-sm leading-relaxed mb-12">
+            Attendify empowers educators with fast, touch-friendly workflows, offline tracking, and compliant reports. Free for solo teachers.
           </p>
 
           {/* Feature list */}
-          <div className="space-y-5">
+          <div className="space-y-6">
             {FEATURES.map((f) => (
-              <div key={f.title} className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0 mt-0.5">
+              <div key={f.title} className="flex items-start gap-4">
+                <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
                   {f.icon}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{f.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{f.desc}</p>
+                  <p className="text-sm font-semibold text-slate-100">{f.title}</p>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
                 </div>
               </div>
             ))}
@@ -123,51 +123,57 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="relative pt-8 border-t border-slate-800">
-          <p className="text-xs text-slate-600">
-            Attendify works on web and Android — session data is yours.
+        <div className="relative pt-8 border-t border-slate-800/80">
+          <p className="text-xs text-slate-500 leading-normal">
+            Used by schools globally. Your local data is stored securely and synced instantly.
           </p>
         </div>
       </div>
 
       {/* Right panel (form) */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <AttendifyMark size={26} />
-            <span className="text-sm font-semibold text-slate-900 dark:text-white">Attendify</span>
+          <div className="lg:hidden flex items-center gap-2.5">
+            <AttendifyMark size={30} />
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Attendify</span>
           </div>
 
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Sign in</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-7">Enter your credentials to continue</p>
+          <div>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
+              Sign in
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Welcome back. Enter your email and password to access your dashboard.
+            </p>
+          </div>
 
           {/* Error */}
           {error && (
-            <div className="mb-5 flex items-start gap-2.5 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <Icon.AlertCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30">
+              <Icon.AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-800 dark:text-red-400 leading-relaxed font-medium">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
               id="login-email"
-              label="Email"
+              label="Email Address"
               type="email"
-              placeholder="you@school.edu"
+              placeholder="name@school.edu"
               autoComplete="email"
               error={errors.email?.message}
               {...register('email')}
             />
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 tracking-wide">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 tracking-wide">
                   Password
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                 >
                   Forgot password?
                 </Link>
@@ -178,13 +184,13 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  className={`w-full h-9 px-3 pr-9 rounded-lg border text-sm transition-colors duration-150 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 ${errors.password ? 'border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20'}`}
+                  className={`w-full h-10 px-3.5 pr-10 rounded-lg border text-base sm:text-sm transition-all duration-150 outline-none bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 ${errors.password ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100 dark:focus:ring-red-950/30' : 'border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/20'}`}
                   {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
                 >
                   {showPassword ? (
                     <Icon.EyeOff size={16} />
@@ -193,41 +199,43 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+              {errors.password && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.password.message}</p>}
             </div>
 
-            <Button type="submit" loading={isSubmitting} className="w-full h-9 mt-1">
-              Sign in
+            <Button type="submit" loading={isSubmitting} className="w-full mt-2">
+              Sign In
             </Button>
           </form>
 
-          <div className="relative my-5">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-100 dark:border-slate-800" />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-3 bg-white dark:bg-slate-950 text-xs text-slate-400">or</span>
+              <span className="px-3 bg-white dark:bg-slate-950 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                or continue with
+              </span>
             </div>
           </div>
 
           <button
             onClick={handleGoogleLogin}
             type="button"
-            className="w-full h-9 flex items-center justify-center gap-2.5 px-4 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="w-full h-10 flex items-center justify-center gap-3 px-4 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-750 transition-all duration-150 shadow-xs"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
+            <svg className="w-4.5 h-4.5 flex-shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continue with Google
+            Google Workspace
           </button>
 
-          <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6">
-            No account?  {' '}
-            <Link href="/auth/signup" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-              Create one free
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+            New to Attendify?{' '}
+            <Link href="/auth/signup" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+              Create an account free
             </Link>
           </p>
         </div>

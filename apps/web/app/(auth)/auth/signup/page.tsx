@@ -9,11 +9,12 @@ import { z } from 'zod';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { Button, Input } from '@/components/ui';
 import { AttendifyMark } from '@/components/ui/icons';
+import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Enter a valid email'),
+  email: z.string().email('Enter a valid email address'),
   password: z
     .string()
     .min(8, 'At least 8 characters')
@@ -34,7 +35,6 @@ export default function SignupPage() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordValue, setPasswordValue] = useState('');
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, watch } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
@@ -53,83 +53,88 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950">
-      {/* Left panel — matches login */}
-      <div className="hidden lg:flex flex-col w-[420px] xl:w-[480px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-10 relative overflow-hidden">
+    <div className="min-h-screen flex bg-white dark:bg-slate-950 font-sans">
+      {/* Left panel — matches login page styling */}
+      <div className="hidden lg:flex flex-col w-[440px] xl:w-[500px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-12 relative overflow-hidden border-r border-slate-900">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
             backgroundSize: '32px 32px',
           }}
         />
-        <div className="relative flex items-center gap-2.5 mb-12">
-          <AttendifyMark size={28} />
-          <span className="text-white text-sm font-semibold tracking-tight">Attendify</span>
+        <div className="relative flex items-center gap-3 mb-16">
+          <AttendifyMark size={32} />
+          <span className="text-white text-base font-bold tracking-tight">Attendify</span>
         </div>
         <div className="relative flex-1">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-3">
-            Get started in<br />under 2 minutes
+          <h1 className="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Get started in<br />under 2 minutes.
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-10">
-            Create your free account. No credit card required. Start managing attendance across your classes right away.
+          <p className="text-slate-400 text-sm leading-relaxed mb-12">
+            Create your free account. No credit card required. Start tracking attendance and generating reports right away.
           </p>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {[
-              { title: 'Free forever for individuals', desc: 'No subscriptions, no hidden fees for solo educators' },
-              { title: 'Unlimited classes and sessions', desc: 'Create as many classes and attendance sessions as you need' },
-              { title: 'Android app included', desc: 'Install Attendify on your phone and work offline too' },
+              { title: 'Free forever for solo teachers', desc: 'No subscriptions, no features locked behind paywalls.' },
+              { title: 'Unlimited classes & records', desc: 'Create as many subjects, classes, and sessions as you want.' },
+              { title: 'Full mobile offline database', desc: 'Work inside remote classrooms without a cell signal.' },
             ].map((f) => (
-              <div key={f.title} className="flex items-start gap-3">
+              <div key={f.title} className="flex items-start gap-4">
                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0 mt-2" />
                 <div>
-                  <p className="text-sm font-medium text-slate-200">{f.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{f.desc}</p>
+                  <p className="text-sm font-semibold text-slate-200">{f.title}</p>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
         <div className="relative pt-8 border-t border-slate-800">
-          <p className="text-xs text-slate-600">Already have an account?{' '}
-            <Link href="/auth/login" className="text-slate-400 hover:text-white transition-colors">Sign in</Link>
+          <p className="text-xs text-slate-500">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-indigo-400 font-semibold hover:underline">Sign in</Link>
           </p>
         </div>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      {/* Right panel — signup form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <AttendifyMark size={26} />
-            <span className="text-sm font-semibold text-slate-900 dark:text-white">Attendify</span>
+          <div className="lg:hidden flex items-center gap-2.5">
+            <AttendifyMark size={30} />
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Attendify</span>
           </div>
 
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Create your account</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-7">Free to use, no credit card required</p>
+          <div>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
+              Create account
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Free forever for individual educators. Join today.
+            </p>
+          </div>
 
           {error && (
-            <div className="mb-5 flex items-start gap-2.5 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <svg className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30">
+              <Icon.AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-800 dark:text-red-400 leading-relaxed font-medium">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <Input
               id="signup-name"
               label="Full Name"
-              placeholder="John Smith"
+              placeholder="Professor John Smith"
               autoComplete="name"
               error={errors.name?.message}
               {...register('name')}
             />
             <Input
               id="signup-email"
-              label="Email"
+              label="Email Address"
               type="email"
               placeholder="you@school.edu"
               autoComplete="email"
@@ -138,15 +143,17 @@ export default function SignupPage() {
             />
             <Input
               id="signup-institution"
-              label="Institution (optional)"
-              placeholder="School or college name"
+              label="Institution Name (optional)"
+              placeholder="e.g., Stanford University"
               {...register('institutionName')}
             />
 
-            {/* Password with strength hints */}
+            {/* Password input with visual hints */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 tracking-wide">Password</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 tracking-wide">
+                  Password
+                </label>
               </div>
               <div className="relative">
                 <input
@@ -154,39 +161,37 @@ export default function SignupPage() {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Min. 8 characters"
                   autoComplete="new-password"
-                  className={`w-full h-9 px-3 pr-9 rounded-lg border text-sm outline-none transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 ${errors.password ? 'border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/20'}`}
+                  className={`w-full h-10 px-3.5 pr-10 rounded-lg border text-base sm:text-sm outline-none transition-all bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 ${errors.password ? 'border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100 dark:focus:ring-red-950/30' : 'border-slate-200 dark:border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/20'}`}
                   {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
                 >
                   {showPassword ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" />
-                    </svg>
+                    <Icon.EyeOff size={16} />
                   ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Icon.Eye size={16} />
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
-              {/* Password strength indicators */}
-              <div className="flex gap-3 mt-2">
+              {errors.password && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.password.message}</p>}
+
+              {/* Rules checkmarks */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2.5">
                 {RULES.map((rule) => {
                   const ok = rule.test(watchedPassword ?? '');
                   return (
-                    <span key={rule.label} className={`flex items-center gap-1 text-[11px] ${ok ? 'text-emerald-600' : 'text-slate-400'}`}>
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        {ok
-                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                          : <circle cx="12" cy="12" r="9" strokeWidth={1.5} />
-                        }
-                      </svg>
+                    <span
+                      key={rule.label}
+                      className={`flex items-center gap-1 text-[11px] font-semibold transition-colors duration-150 ${ok ? 'text-emerald-600 dark:text-emerald-450' : 'text-slate-400 dark:text-slate-500'}`}
+                    >
+                      {ok ? (
+                        <Icon.CheckCircle size={12} className="text-emerald-600 dark:text-emerald-450" />
+                      ) : (
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                      )}
                       {rule.label}
                     </span>
                   );
@@ -194,21 +199,21 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <Button type="submit" loading={isSubmitting} className="w-full mt-1">
+            <Button type="submit" loading={isSubmitting} className="w-full mt-2">
               Create Account
             </Button>
           </form>
 
-          <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-5">
-            By signing up you agree to our{' '}
-            <Link href="#" className="text-slate-500 dark:text-slate-400 hover:underline">Terms</Link>
+          <p className="text-center text-xs text-slate-400 dark:text-slate-500 leading-relaxed mt-4">
+            By signing up, you agree to our{' '}
+            <Link href="#" className="underline hover:text-slate-600">Terms of Service</Link>
             {' '}and{' '}
-            <Link href="#" className="text-slate-500 dark:text-slate-400 hover:underline">Privacy Policy</Link>
+            <Link href="#" className="underline hover:text-slate-600">Privacy Policy</Link>.
           </p>
 
-          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-3">
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
             Already have an account?{' '}
-            <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+            <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
               Sign in
             </Link>
           </p>

@@ -105,7 +105,7 @@ export default function ClassDetailClient() {
   if (!classId) {
     return (
       <DashboardLayout title="Class Details">
-        <Card className="p-6 text-center">
+        <Card className="p-6 text-center max-w-md mx-auto space-y-4">
           <p className="text-slate-500">No class ID provided.</p>
           <Link href="/classes" className="mt-4 inline-block">
             <Button size="sm">Go back to Classes</Button>
@@ -121,7 +121,7 @@ export default function ClassDetailClient() {
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+          className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors"
         >
           <Icon.ArrowLeft size={16} />
           Back to Classes
@@ -131,18 +131,18 @@ export default function ClassDetailClient() {
         {loading ? (
           <Skeleton className="h-36 rounded-2xl" />
         ) : cls && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100/50 dark:border-indigo-900/30 flex items-center justify-center text-indigo-650 dark:text-indigo-400 font-bold text-base shadow-xs">
                     {cls.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                      {cls.name} {cls.section && <span className="text-slate-400 font-normal text-lg">· {cls.section}</span>}
+                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
+                      {cls.name} {cls.section && <span className="text-slate-400 dark:text-slate-500 font-normal">· {cls.section}</span>}
                     </h2>
-                    <p className="text-slate-500 text-sm">{cls.academicYear} {cls.semester && `· ${cls.semester}`}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">{cls.academicYear} {cls.semester && `· ${cls.semester}`}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -151,11 +151,11 @@ export default function ClassDetailClient() {
                       Take Attendance
                     </Button>
                   </Link>
-                  <Button variant="danger" size="sm" onClick={handleDelete}>Delete</Button>
+                  <Button variant="danger" size="sm" onClick={handleDelete}>Delete Class</Button>
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-4 flex-wrap">
+              <div className="flex gap-1.5 mt-5 pt-4 border-t border-slate-50 dark:border-slate-800/40 flex-wrap">
                 <Badge variant="info">{cls._count?.enrollments ?? 0} students</Badge>
                 <Badge variant="purple">{cls._count?.sessions ?? 0} sessions</Badge>
                 <Badge variant="default">{subjects.length} subjects</Badge>
@@ -165,16 +165,16 @@ export default function ClassDetailClient() {
         )}
 
         {/* Two-column: Subjects + Recent Sessions */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Subjects */}
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200">Subjects</h3>
+                <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Subjects</h3>
                 <Badge variant="default">{subjects.length}</Badge>
               </div>
               <Button size="sm" variant="secondary" onClick={() => setSubjectModalOpen(true)}>
-                Manage
+                Manage Subjects
               </Button>
             </div>
             {loading ? (
@@ -190,12 +190,12 @@ export default function ClassDetailClient() {
                     key={subject.id}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl"
+                    transition={{ delay: i * 0.025 }}
+                    className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800 rounded-xl"
                   >
                     <div>
-                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{subject.name}</p>
-                      {subject.code && <p className="text-xs text-slate-400">{subject.code}</p>}
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{subject.name}</p>
+                      {subject.code && <p className="text-xs text-slate-450 dark:text-slate-500 font-medium mt-0.5">{subject.code}</p>}
                     </div>
                     <Badge variant="default">{subject._count?.sessions ?? 0} sessions</Badge>
                   </motion.div>
@@ -206,9 +206,9 @@ export default function ClassDetailClient() {
 
           {/* Recent Sessions */}
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200">Recent Sessions</h3>
-              <Link href={`/attendance?classId=${classId}`} className="text-xs text-indigo-600 hover:underline">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Recent Sessions</h3>
+              <Link href={`/attendance?classId=${classId}`} className="text-xs font-semibold text-indigo-650 dark:text-indigo-400 hover:underline">
                 View all
               </Link>
             </div>
@@ -218,7 +218,7 @@ export default function ClassDetailClient() {
               </div>
             ) : sessions.length === 0 ? (
               <EmptyState
-                icon={<Icon.Clipboard size={24} />}
+                icon={<Icon.Clipboard size={24} className="text-slate-400 dark:text-slate-500" />}
                 title="No sessions yet"
                 description="Take attendance to see sessions here"
               />
@@ -233,17 +233,17 @@ export default function ClassDetailClient() {
                       key={session.id}
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
+                      transition={{ delay: i * 0.025 }}
                     >
                       <Link
                         href={`/attendance`}
-                        className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800 rounded-xl hover:bg-slate-100/50 dark:hover:bg-slate-800/80 transition-colors"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate max-w-[160px]">
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate max-w-[160px]">
                             {session.subject?.name}
                           </p>
-                          <p className="text-xs text-slate-400">{formatDate(session.date)}</p>
+                          <p className="text-xs text-slate-450 dark:text-slate-500 font-medium mt-0.5">{formatDate(session.date)}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge variant={pct >= 75 ? 'success' : pct >= 50 ? 'warning' : 'danger'}>
@@ -264,10 +264,10 @@ export default function ClassDetailClient() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200">Students in this class</h3>
-              <p className="text-sm text-slate-500 mt-0.5">{cls?._count?.enrollments ?? 0} enrolled students</p>
+              <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Students in this class</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{cls?._count?.enrollments ?? 0} enrolled students</p>
             </div>
-            <Link href={`/students?classId=${classId}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
+            <Link href={`/students?classId=${classId}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-660 dark:text-indigo-400 hover:underline">
               <span>View Students</span>
               <Icon.ArrowRight size={14} />
             </Link>
@@ -302,9 +302,9 @@ export default function ClassDetailClient() {
               <p className="text-sm text-slate-400 text-center py-6">No subjects added yet</p>
             ) : (
               subjects.map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                <div key={s.id} className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100/50 dark:border-slate-800">
                   <div>
-                    <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{s.name}</span>
                     {s.code && <span className="text-xs text-slate-400 ml-2">({s.code})</span>}
                   </div>
                   <div className="flex items-center gap-2">

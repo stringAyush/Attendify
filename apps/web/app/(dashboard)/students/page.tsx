@@ -138,8 +138,8 @@ export default function StudentsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Students</h2>
-            <p className="text-slate-500 text-sm mt-0.5">{students.length} students enrolled</p>
+            <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">Students</h2>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">{students.length} students enrolled</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setImportOpen(true)} icon={<Icon.Upload size={16} />}>
@@ -157,7 +157,7 @@ export default function StudentsPage() {
             placeholder="Search by name, roll number..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="flex-1 min-w-48"
+            className="flex-1 min-w-[200px]"
             leftIcon={<Icon.Search size={16} />}
           />
           <Select
@@ -168,21 +168,21 @@ export default function StudentsPage() {
           />
         </div>
 
-        {/* Student Table */}
-        <Card className="overflow-hidden">
+        {/* Student Table Card */}
+        <Card className="p-0 overflow-hidden border border-slate-200 dark:border-slate-800">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full border-collapse">
               <thead>
-                <tr className="border-b border-slate-100 dark:border-slate-800">
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-6 py-4">Student</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-4 hidden sm:table-cell">Roll No.</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-4 hidden md:table-cell">Class</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-4">Attendance</th>
-                  <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-4 hidden lg:table-cell">Enrolled</th>
-                  <th className="px-4 py-4" />
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 text-[10px] font-bold tracking-wider uppercase">
+                  <th className="text-left px-6 py-3.5">Student Info</th>
+                  <th className="text-left px-4 py-3.5 hidden sm:table-cell">Roll No.</th>
+                  <th className="text-left px-4 py-3.5 hidden md:table-cell">Class</th>
+                  <th className="text-left px-4 py-3.5">Attendance Rate</th>
+                  <th className="text-left px-4 py-3.5 hidden lg:table-cell">Enrolled</th>
+                  <th className="px-4 py-3.5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i}>
@@ -198,9 +198,9 @@ export default function StudentsPage() {
                   <tr>
                     <td colSpan={6} className="py-12">
                       <EmptyState
-                        icon={<Icon.Users size={32} />}
+                        icon={<Icon.Users size={32} className="text-slate-400 dark:text-slate-500" />}
                         title="No students found"
-                        description={search ? 'Try adjusting your search' : 'Add students to get started'}
+                        description={search ? 'Try adjusting your search criteria' : 'Add students to your roster to get started'}
                         action={!search && <Button onClick={() => setCreateOpen(true)}>Add Student</Button>}
                       />
                     </td>
@@ -213,51 +213,51 @@ export default function StudentsPage() {
                         key={student.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: i * 0.03 }}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
+                        transition={{ delay: i * 0.015 }}
+                        className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors group"
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-3.5">
                           <div className="flex items-center gap-3">
                             <Avatar name={student.name} src={student.avatar} size="sm" />
-                            <div>
+                            <div className="min-w-0">
                               <Link
                                 href={`/students/detail?id=${student.id}`}
-                                className="text-sm font-semibold text-slate-800 dark:text-slate-200 hover:text-indigo-600 transition-colors"
+                                className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-indigo-655 dark:hover:text-indigo-400 transition-colors truncate block"
                               >
                                 {student.name}
                               </Link>
                               {student.email && (
-                                <p className="text-xs text-slate-400">{student.email}</p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5 truncate font-medium">{student.email}</p>
                               )}
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-4 hidden sm:table-cell">
+                        <td className="px-4 py-3.5 hidden sm:table-cell">
                           <Badge variant="default">{student.rollNumber}</Badge>
                         </td>
-                        <td className="px-4 py-4 hidden md:table-cell">
-                          <span className="text-sm text-slate-600 dark:text-slate-400">
+                        <td className="px-4 py-3.5 hidden md:table-cell">
+                          <span className="text-sm font-semibold text-slate-705 dark:text-slate-350">
                             {classes.find((c) => c.id === student.classId)?.name ?? '—'}
                           </span>
                         </td>
-                        <td className="px-4 py-4">
-                          <div className="flex items-center gap-2">
+                        <td className="px-4 py-3.5">
+                          <div className="flex items-center gap-3.5">
                             <div className="w-16 hidden sm:block">
                               <ProgressBar value={pct} />
                             </div>
-                            <span className={`text-sm font-semibold px-2 py-0.5 rounded-full text-xs ${getAttendanceBg(pct)}`}>
+                            <span className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${getAttendanceBg(pct)}`}>
                               {pct}%
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-4 hidden lg:table-cell">
-                          <span className="text-sm text-slate-400">{formatDate(student.createdAt)}</span>
+                        <td className="px-4 py-3.5 hidden lg:table-cell">
+                          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{formatDate(student.createdAt)}</span>
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-4 py-3.5">
                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Link
                               href={`/students/detail?id=${student.id}`}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-650 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                             >
                               <Icon.Eye size={16} />
                             </Link>
@@ -283,7 +283,7 @@ export default function StudentsPage() {
               <Button variant="secondary" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
                 <Icon.ChevronLeft size={16} />
               </Button>
-              <span className="text-sm text-slate-500">Page {page} of {totalPages}</span>
+              <span className="text-xs font-semibold text-slate-500">Page {page} of {totalPages}</span>
               <Button variant="secondary" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
                 <Icon.ChevronRight size={16} />
               </Button>
@@ -300,13 +300,13 @@ export default function StudentsPage() {
           <Select
             label="Class"
             options={classes.map((c) => ({ value: c.id, label: `${c.name} ${c.section ?? ''}`.trim() }))}
-            placeholder="Select class"
+            placeholder="Select Class"
             error={errors.classId?.message}
             {...register('classId')}
           />
           <Input label="Email (optional)" type="email" placeholder="student@example.com" error={errors.email?.message} {...register('email')} />
           <Input label="Phone (optional)" placeholder="+91 98765 43210" {...register('phone')} />
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="secondary" className="flex-1" onClick={() => { setCreateOpen(false); reset(); }}>Cancel</Button>
             <Button type="submit" loading={submitting} className="flex-1">Add Student</Button>
           </div>
@@ -317,7 +317,7 @@ export default function StudentsPage() {
       <Modal open={importOpen} onClose={() => setImportOpen(false)} title="Import Students via CSV" description="Upload a CSV file with columns: name, rollNumber, email (optional), phone (optional)">
         <div className="space-y-4">
           <Select
-            label="Target Class"
+            label="Target Class *"
             options={classes.map((c) => ({ value: c.id, label: `${c.name} ${c.section ?? ''}`.trim() }))}
             placeholder="Select class"
             value={importClassId}
@@ -325,23 +325,23 @@ export default function StudentsPage() {
           />
           <div
             onClick={() => fileRef.current?.click()}
-            className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all"
+            className="border border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-400 hover:bg-slate-50/50 dark:hover:bg-slate-900/10 transition-all"
           >
-            <Icon.Upload size={32} className="text-slate-300 mx-auto mb-3" />
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              {importFile ? importFile.name : 'Click to upload CSV file'}
+            <Icon.Upload size={32} className="text-indigo-400 mx-auto mb-3" />
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              {importFile ? importFile.name : 'Click to select CSV file'}
             </p>
-            <p className="text-xs text-slate-400 mt-1">Max size: 5MB</p>
+            <p className="text-xs text-slate-400 mt-1">Maximum file size: 5MB</p>
             <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={(e) => setImportFile(e.target.files?.[0] ?? null)} />
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 text-xs text-slate-500 font-mono">
+          <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-xl p-3.5 text-xs text-slate-500 font-mono leading-relaxed">
             name,rollNumber,email,phone<br />
             John Doe,101,john@example.com,9876543210<br />
             Jane Smith,102,,
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <Button type="button" variant="secondary" className="flex-1" onClick={() => setImportOpen(false)}>Cancel</Button>
-            <Button className="flex-1" loading={submitting} onClick={handleImport}>Import</Button>
+            <Button className="flex-1" loading={submitting} onClick={handleImport}>Import CSV</Button>
           </div>
         </div>
       </Modal>

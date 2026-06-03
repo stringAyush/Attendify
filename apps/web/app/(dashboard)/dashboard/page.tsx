@@ -26,9 +26,9 @@ function StatCard({
   trend?: 'up' | 'down' | 'neutral';
 }) {
   return (
-    <Card className="p-5">
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+    <Card className="p-6">
+      <div className="flex items-start justify-between mb-4">
+        <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
           {icon}
         </div>
         {trend && trend !== 'neutral' && (
@@ -37,9 +37,9 @@ function StatCard({
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{value}</p>
-      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">{title}</p>
-      {sub && <p className="text-[11px] text-slate-400 mt-1">{sub}</p>}
+      <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight tabular-nums">{value}</p>
+      <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mt-1">{title}</p>
+      {sub && <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>}
     </Card>
   );
 }
@@ -67,26 +67,26 @@ export default function DashboardPage() {
     {
       href: '/attendance?create=true',
       label: 'Take Attendance',
-      description: 'Start a new session',
-      icon: <Icon.ClipboardCheck size={16} />,
+      description: 'Start session',
+      icon: <Icon.ClipboardCheck size={18} className="text-indigo-600 dark:text-indigo-400" />,
     },
     {
       href: '/classes?create=true',
       label: 'New Class',
-      description: 'Create a class',
-      icon: <Icon.Plus size={16} />,
+      description: 'Create class',
+      icon: <Icon.Plus size={18} className="text-indigo-600 dark:text-indigo-400" />,
     },
     {
       href: '/students?import=true',
       label: 'Import Students',
-      description: 'Upload via CSV',
-      icon: <Icon.Upload size={16} />,
+      description: 'Upload CSV',
+      icon: <Icon.Upload size={18} className="text-indigo-600 dark:text-indigo-400" />,
     },
     {
       href: '/reports',
       label: 'Export Report',
       description: 'PDF or CSV',
-      icon: <Icon.FileText size={16} />,
+      icon: <Icon.FileText size={18} className="text-indigo-600 dark:text-indigo-400" />,
     },
   ];
 
@@ -95,56 +95,56 @@ export default function DashboardPage() {
       <div className="space-y-6">
         {/* Page header */}
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
             {greeting()}, {user?.name?.split(' ')[0]}
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
         </div>
 
         {/* Stat cards */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-xl" />
+              <Skeleton key={i} className="h-32 rounded-xl" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               title="Classes"
               value={stats?.totalClasses ?? 0}
-              icon={<Icon.BookOpen size={16} />}
+              icon={<Icon.BookOpen size={18} />}
             />
             <StatCard
               title="Students"
               value={stats?.totalStudents ?? 0}
-              icon={<Icon.Users size={16} />}
+              icon={<Icon.Users size={18} />}
             />
             <StatCard
               title="Sessions"
               value={stats?.totalSessions ?? 0}
-              icon={<Icon.ClipboardCheck size={16} />}
+              icon={<Icon.ClipboardCheck size={18} />}
             />
             <StatCard
               title="Avg. Attendance"
               value={`${stats?.averageAttendance ?? 0}%`}
               sub={stats && stats.averageAttendance >= 75 ? 'On track' : 'Needs attention'}
               trend={stats ? (stats.averageAttendance >= 75 ? 'up' : 'down') : 'neutral'}
-              icon={<Icon.BarChart2 size={16} />}
+              icon={<Icon.BarChart2 size={18} />}
             />
           </div>
         )}
 
         {/* Chart + Recent Sessions */}
-        <div className="grid lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           {/* Trend Chart */}
-          <Card className="lg:col-span-3 p-5">
-            <div className="flex items-center justify-between mb-5">
+          <Card className="lg:col-span-3 p-6">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Attendance Trend</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Last 30 days</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Attendance Trend</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last 30 days overview</p>
               </div>
             </div>
             {loading ? (
@@ -162,28 +162,34 @@ export default function DashboardPage() {
                       <stop offset="100%" stopColor="#dc2626" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="2 4" stroke="currentColor" className="opacity-5" />
+                  <CartesianGrid strokeDasharray="2 4" stroke="currentColor" className="opacity-[0.03]" />
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 10, fill: '#94a3b8' }}
+                    tick={{ fontSize: 10, fill: 'currentColor' }}
+                    className="text-slate-400 dark:text-slate-500 font-medium"
                     tickFormatter={(v: string) => v.slice(5)}
                     axisLine={false}
                     tickLine={false}
                     interval={6}
                   />
                   <YAxis
-                    tick={{ fontSize: 10, fill: '#94a3b8' }}
+                    tick={{ fontSize: 10, fill: 'currentColor' }}
+                    className="text-slate-400 dark:text-slate-500 font-medium"
                     axisLine={false}
                     tickLine={false}
                   />
                   <Tooltip
                     contentStyle={{
                       borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
+                      border: '1px solid hsl(var(--border))',
+                      backgroundColor: 'hsl(var(--card))',
                       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.07)',
                       fontSize: '12px',
+                      color: 'hsl(var(--foreground))',
                       padding: '8px 12px',
                     }}
+                    itemStyle={{ color: 'hsl(var(--foreground))' }}
+                    labelStyle={{ color: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }}
                   />
                   <Area type="monotone" dataKey="present" stroke="#4f46e5" fill="url(#presentGrad)" strokeWidth={1.75} name="Present" dot={false} />
                   <Area type="monotone" dataKey="absent" stroke="#dc2626" fill="url(#absentGrad)" strokeWidth={1.75} name="Absent" dot={false} />
@@ -193,22 +199,22 @@ export default function DashboardPage() {
           </Card>
 
           {/* Recent Sessions */}
-          <Card className="lg:col-span-2 flex flex-col">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">Recent Sessions</h3>
-              <Link href="/attendance" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+          <Card className="lg:col-span-2 flex flex-col p-0 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Recent Sessions</h3>
+              <Link href="/attendance" className="text-xs font-semibold text-indigo-650 dark:text-indigo-400 hover:underline">
                 View all
               </Link>
             </div>
-            <div className="flex-1 divide-y divide-slate-50 dark:divide-slate-800 overflow-hidden">
+            <div className="flex-1 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
               {loading ? (
-                <div className="space-y-px p-5">
+                <div className="space-y-px p-6">
                   {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 mb-2" />)}
                 </div>
               ) : !stats?.recentSessions?.length ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center px-5">
-                  <p className="text-sm text-slate-400">No sessions yet</p>
-                  <Link href="/attendance?create=true" className="mt-2 text-xs text-indigo-600 hover:underline">
+                <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+                  <p className="text-sm text-slate-400">No sessions recorded yet</p>
+                  <Link href="/attendance?create=true" className="mt-2 text-xs font-semibold text-indigo-650 dark:text-indigo-400 hover:underline">
                     Create your first session
                   </Link>
                 </div>
@@ -221,17 +227,17 @@ export default function DashboardPage() {
                     <Link
                       key={session.id}
                       href={`/attendance`}
-                      className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                      className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
                           {session.subject?.name}
                         </p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">
+                        <p className="text-xs text-slate-400 dark:text-slate-550 mt-0.5 font-medium">
                           {session.class?.name} · {formatDate(session.date)}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-3 flex-shrink-0">
                         <div className="w-14">
                           <ProgressBar value={pct} size="xs" />
                         </div>
@@ -249,24 +255,24 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div>
-          <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+          <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
             Quick Actions
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {QUICK_ACTIONS.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-colors group"
+                className="flex items-center gap-4 px-5 py-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-650 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 transition-all duration-150 group shadow-xs active:scale-[0.98]"
               >
-                <div className="text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors flex-shrink-0">
+                <div className="w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex items-center justify-center flex-shrink-0">
                   {action.icon}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 truncate">
+                  <p className="text-sm font-bold text-slate-800 dark:text-slate-250 truncate">
                     {action.label}
                   </p>
-                  <p className="text-[11px] text-slate-400 truncate">{action.description}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">{action.description}</p>
                 </div>
               </Link>
             ))}

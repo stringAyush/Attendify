@@ -2,113 +2,156 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { authApi } from '@/lib/api';
-import { Button, Input, useToast } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 import { AttendifyMark } from '@/components/ui/icons';
 import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
-export default function ForgotPasswordPage() {
-  const { toast } = useToast();
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Enter a valid email address'),
+});
+type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
+export default function ForgotPasswordPage() {
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
+
+  const onSubmit = async (data: ForgotPasswordForm) => {
+    setError('');
+    setSuccess(false);
     try {
-      await authApi.forgotPassword(email);
-      setSent(true);
-    } catch (err) {
-      toast('error', getApiErrorMessage(err));
-    } finally {
-      setLoading(false);
+      await authApi.forgotPassword(data.email);
+      setSuccess(true);
+    } catch (e) {
+      setError(getApiErrorMessage(e));
     }
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950">
-      {/* Left panel — matches login/signup */}
-      <div className="hidden lg:flex flex-col w-[420px] xl:w-[480px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-10 relative overflow-hidden">
+    <div className="min-h-screen flex bg-white dark:bg-slate-950 font-sans">
+      {/* Left panel — matches login page styling */}
+      <div className="hidden lg:flex flex-col w-[440px] xl:w-[500px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-12 relative overflow-hidden border-r border-slate-900">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
             backgroundSize: '32px 32px',
           }}
         />
-        <div className="relative flex items-center gap-2.5 mb-12">
-          <AttendifyMark size={28} />
-          <span className="text-white text-sm font-semibold tracking-tight">Attendify</span>
+        <div className="relative flex items-center gap-3 mb-16">
+          <AttendifyMark size={32} />
+          <span className="text-white text-base font-bold tracking-tight">Attendify</span>
         </div>
         <div className="relative flex-1">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-3">
-            Secure Account<br />Recovery
+          <h1 className="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Security &<br />Account Recovery.
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-10">
-            Forgot your password? No worries. Just enter your registered email address, and we'll send you a link to reset it securely.
+          <p className="text-slate-400 text-sm leading-relaxed mb-12">
+            Forgot your password? No worries. Enter your verified email address and we'll send you instructions to securely reset it.
           </p>
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Icon.Lock size={18} className="text-indigo-400" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-200">Secure Reset Link</p>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">We verify your account and send a single-use token valid for 1 hour.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Icon.AlertCircle className="text-indigo-400" size={18} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-200">Multi-device Lock</p>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Resetting your password will log out active sessions on other devices.</p>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="relative pt-8 border-t border-slate-800">
-          <p className="text-xs text-slate-600">Need support? Contact us at support@attendify.com</p>
+          <p className="text-xs text-slate-500">
+            Remember your credentials?{' '}
+            <Link href="/auth/login" className="text-indigo-400 font-semibold hover:underline">Sign in</Link>
+          </p>
         </div>
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <AttendifyMark size={26} />
-            <span className="text-sm font-semibold text-slate-900 dark:text-white">Attendify</span>
+          <div className="lg:hidden flex items-center gap-2.5">
+            <AttendifyMark size={30} />
+            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Attendify</span>
           </div>
 
-          {sent ? (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4">
-                  <Icon.CheckCircle size={24} />
-                </div>
-                <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">Check your email</h2>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 leading-relaxed">
-                  We sent a password reset link to <strong className="text-slate-700 dark:text-slate-200">{email}</strong>. It expires in 1 hour.
+          <div>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
+              Reset Password
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Enter your email address to recover your account.
+            </p>
+          </div>
+
+          {error && (
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30">
+              <Icon.AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-800 dark:text-red-400 leading-relaxed font-medium">{error}</p>
+            </div>
+          )}
+
+          {success ? (
+            <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 text-center space-y-4">
+              <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-center text-emerald-600">
+                <Icon.CheckCircle size={22} />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Check your inbox</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  We sent secure instructions to reset your password. If you don't receive it shortly, please verify your spam folder.
                 </p>
-                <Link href="/auth/login" className="inline-flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-medium text-sm hover:underline">
-                  <Icon.ArrowLeft size={14} />
-                  <span>Back to login</span>
+              </div>
+              <div className="pt-2">
+                <Link href="/auth/login">
+                  <Button className="w-full">
+                    Return to Login
+                  </Button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           ) : (
-            <>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">Forgot password?</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-7">Enter your email and we'll send a reset link.</p>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <Input
+                id="reset-email"
+                label="Email Address"
+                type="email"
+                placeholder="name@school.edu"
+                autoComplete="email"
+                error={errors.email?.message}
+                {...register('email')}
+              />
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  id="forgot-email"
-                  label="Email Address"
-                  type="email"
-                  placeholder="teacher@school.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Button type="submit" loading={loading} className="w-full mt-2">
-                  Send Reset Link
+              <div className="space-y-3">
+                <Button type="submit" loading={isSubmitting} className="w-full">
+                  Send Recovery Link
                 </Button>
-              </form>
 
-              <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-5">
-                Remembered it?{' '}
-                <Link href="/auth/login" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
-                  Sign in
+                <Link href="/auth/login" className="block text-center text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 py-1.5">
+                  Back to Login
                 </Link>
-              </p>
-            </>
+              </div>
+            </form>
           )}
         </div>
       </div>
