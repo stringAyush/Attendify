@@ -613,10 +613,11 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 - **Safe areas**: `.safe-bottom` class on `MobileBottomNav` for Capacitor notch handling
 
 ### Authentication Pages (Login, Signup, Forgot Password)
-- **Left panel**: Dark (`slate-950`) with real product features and the official Attendify logo — no fake stats
-- **Right panel**: Clean form, `h-9` inputs, show/hide password toggle where appropriate
-- **Branding**: Uses the official `AttendifyMark` (indigo square container with clipboard-check graphic) and `AttendifyLogo` wordmark
-- **Error state**: icon + message in bordered box (not colored background blocks)
+- **Visual Reference Alignment**: Implemented a modern, high-fidelity split layout inspired by premium SaaS visual references.
+- **Left Panel**: Features a vibrant gradient (`from-indigo-750 via-indigo-900 to-purple-950`) with a 2x2 grid of semi-transparent feature cards (`border-white/[0.08] bg-white/[0.04]`). Copy highlights real platform features (One-Tap Workflows, Compliance Reports, Insights, Multi-device Sync) rather than placeholder metrics. Includes a professional "Designed for" tag track at the bottom.
+- **Right Panel (Dark Form Style)**: Forced dark theme wrapper (`dark`) so inputs, buttons, and OAuth flows render in premium dark mode (`bg-slate-950`, dark inputs, outlines).
+- **Google OAuth**: Clean outlined OAuth button with official Google Workspace branding.
+
 
 ### Iconography & Emojis
 - **Eradication of Emojis**: Removed all raw emojis throughout the application (headers, badges, status notifications, buttons) and replaced them with vector iconography

@@ -7,3 +7,5 @@ coverage
 .env.local
 .env.production.local
 *.log
+.turbo
+

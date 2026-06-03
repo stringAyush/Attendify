@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { authApi } from '@/lib/api';
 import { Button, Input } from '@/components/ui';
-import { AttendifyMark } from '@/components/ui/icons';
 import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
@@ -15,6 +14,29 @@ const forgotPasswordSchema = z.object({
   email: z.string().email('Enter a valid email address'),
 });
 type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+
+const FEATURES = [
+  {
+    icon: <Icon.Lock size={18} className="text-white" />,
+    title: 'Secure Tokens',
+    desc: 'Password recovery links expire in 1 hour for account safety.',
+  },
+  {
+    icon: <Icon.AlertCircle size={18} className="text-white" />,
+    title: 'Session Lockout',
+    desc: 'Resetting credentials logs out all other active browser sessions.',
+  },
+  {
+    icon: <Icon.CheckCircle size={18} className="text-white" />,
+    title: 'Identity Verification',
+    desc: 'Uses cryptographically random signatures to secure reset flows.',
+  },
+  {
+    icon: <Icon.Smartphone size={18} className="text-white" />,
+    title: 'Cross-Device Safety',
+    desc: 'Reset securely on desktop, mobile web, or native Android apps.',
+  },
+];
 
 export default function ForgotPasswordPage() {
   const [error, setError] = useState('');
@@ -36,94 +58,109 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-white dark:bg-slate-950 font-sans">
-      {/* Left panel — matches login page styling */}
-      <div className="hidden lg:flex flex-col w-[440px] xl:w-[500px] flex-shrink-0 bg-slate-950 dark:bg-slate-900 p-12 relative overflow-hidden border-r border-slate-900">
+    <div className="dark min-h-screen flex bg-slate-950 text-white font-sans">
+      {/* Left panel — engaging sidebar (matching login) */}
+      <div className="hidden lg:flex flex-col w-[48%] xl:w-[50%] flex-shrink-0 bg-gradient-to-br from-indigo-750 via-indigo-900 to-purple-950 p-12 xl:p-16 relative overflow-hidden justify-between border-r border-slate-900">
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.025]"
           style={{
             backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
             backgroundSize: '32px 32px',
           }}
         />
-        <div className="relative flex items-center gap-3 mb-16">
-          <AttendifyMark size={32} />
-          <span className="text-white text-base font-bold tracking-tight">Attendify</span>
+
+        {/* Logo */}
+        <div className="relative flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/10">
+            <Icon.ClipboardCheck size={16} className="text-white" />
+          </div>
+          <span className="text-white text-base font-extrabold tracking-tight">Attendify</span>
         </div>
-        <div className="relative flex-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
-            Security &<br />Account Recovery.
+
+        {/* Hero Section */}
+        <div className="relative my-auto py-8">
+          <h1 className="text-4xl xl:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+            Security &<br />Account Recovery
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-12">
-            Forgot your password? No worries. Enter your verified email address and we'll send you instructions to securely reset it.
+          <p className="text-indigo-200/80 text-sm xl:text-base leading-relaxed mb-12 max-w-md">
+            Forgot your password? No worries. Enter your registered email address and we will send you secure recovery instructions.
           </p>
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon.Lock size={18} className="text-indigo-400" />
+
+          {/* 2x2 Feature Grid */}
+          <div className="grid grid-cols-2 gap-4 xl:gap-6">
+            {FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md flex flex-col justify-between min-h-[145px] hover:border-white/[0.12] transition-colors"
+              >
+                <div className="w-9 h-9 rounded-lg bg-white/[0.08] border border-white/[0.04] flex items-center justify-center text-white mb-4">
+                  {f.icon}
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white leading-snug">{f.title}</h3>
+                  <p className="text-[11px] text-indigo-200/60 mt-1 leading-relaxed">{f.desc}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-200">Secure Reset Link</p>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">We verify your account and send a single-use token valid for 1 hour.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="w-9 h-9 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon.AlertCircle className="text-indigo-400" size={18} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-200">Multi-device Lock</p>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Resetting your password will log out active sessions on other devices.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-        <div className="relative pt-8 border-t border-slate-800">
-          <p className="text-xs text-slate-500">
-            Remember your credentials?{' '}
-            <Link href="/auth/login" className="text-indigo-400 font-semibold hover:underline">Sign in</Link>
-          </p>
+
+        {/* Tag System */}
+        <div className="relative pt-6 border-t border-white/[0.08] flex items-center gap-3.5 flex-wrap">
+          <span className="text-[10px] font-bold text-indigo-200/50 uppercase tracking-widest">Designed for</span>
+          <div className="flex gap-2 flex-wrap">
+            {['Schools', 'Colleges', 'Coaching Centers', 'Universities'].map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-semibold text-indigo-100 bg-white/[0.08] border border-white/[0.04] rounded-lg px-3 py-1"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+      {/* Right panel — forgot password form */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-950">
         <div className="w-full max-w-sm space-y-8">
-          {/* Mobile logo */}
+          {/* Mobile logo header */}
           <div className="lg:hidden flex items-center gap-2.5">
-            <AttendifyMark size={30} />
-            <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Attendify</span>
+            <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
+              <Icon.ClipboardCheck size={14} className="text-white" />
+            </div>
+            <span className="text-base font-extrabold text-white tracking-tight">Attendify</span>
           </div>
 
           <div>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
+            <h2 className="text-3xl font-extrabold text-white tracking-tight">
               Reset Password
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-              Enter your email address to recover your account.
+            <p className="text-sm text-slate-400 mt-2">
+              Enter your email address to recover your account
             </p>
           </div>
 
           {error && (
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30">
-              <Icon.AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-red-800 dark:text-red-400 leading-relaxed font-medium">{error}</p>
+            <div className="flex items-start gap-3 p-4 rounded-lg bg-red-950/20 border border-red-900/30">
+              <Icon.AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-455 leading-relaxed font-semibold">{error}</p>
             </div>
           )}
 
           {success ? (
-            <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40 text-center space-y-4">
-              <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-center text-emerald-600">
+            <div className="p-6 rounded-xl border border-slate-800 bg-slate-900/30 text-center space-y-4">
+              <div className="mx-auto w-12 h-12 rounded-full bg-emerald-950/30 border border-emerald-900/30 flex items-center justify-center text-emerald-450">
                 <Icon.CheckCircle size={22} />
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Check your inbox</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <h3 className="text-base font-bold text-white">Check your inbox</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
                   We sent secure instructions to reset your password. If you don't receive it shortly, please verify your spam folder.
                 </p>
               </div>
               <div className="pt-2">
-                <Link href="/auth/login">
+                <Link href="/auth/login" className="block w-full">
                   <Button className="w-full">
                     Return to Login
                   </Button>
@@ -136,7 +173,7 @@ export default function ForgotPasswordPage() {
                 id="reset-email"
                 label="Email Address"
                 type="email"
-                placeholder="name@school.edu"
+                placeholder="youremail@school.com"
                 autoComplete="email"
                 error={errors.email?.message}
                 {...register('email')}
@@ -147,7 +184,10 @@ export default function ForgotPasswordPage() {
                   Send Recovery Link
                 </Button>
 
-                <Link href="/auth/login" className="block text-center text-sm font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 py-1.5">
+                <Link
+                  href="/auth/login"
+                  className="block text-center text-sm font-bold text-slate-450 hover:text-slate-200 py-1.5 transition-colors"
+                >
                   Back to Login
                 </Link>
               </div>
