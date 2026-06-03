@@ -186,8 +186,8 @@ export function Card({ children, className, clickable = false, ...props }: CardP
   return (
     <div
       className={cn(
-        'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl transition-all duration-150',
-        clickable && 'cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md active:scale-[0.99]',
+        'bg-white dark:bg-slate-900 border border-slate-200/85 dark:border-slate-800 rounded-xl transition-all duration-150 shadow-xs dark:shadow-none',
+        clickable && 'cursor-pointer hover:border-indigo-200/80 hover:shadow-sm dark:hover:border-slate-700 active:scale-[0.99]',
         className
       )}
       {...props}
@@ -196,6 +196,7 @@ export function Card({ children, className, clickable = false, ...props }: CardP
     </div>
   );
 }
+
 
 // ─── Badge ────────────────────────────────────────────────────
 interface BadgeProps {

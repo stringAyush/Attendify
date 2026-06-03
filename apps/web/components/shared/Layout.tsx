@@ -48,7 +48,6 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         </Link>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-2 py-3 overflow-y-auto scrollbar-hide space-y-0.5">
         {navItems.map(({ href, label, NavIcon }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
@@ -58,21 +57,27 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
               href={href}
               onClick={onClose}
               className={cn(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-100',
+                'group flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all duration-100',
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300'
+                  ? 'bg-indigo-50/80 dark:bg-indigo-950/50 text-indigo-750 dark:text-indigo-300 font-bold'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
               )}
             >
-              <NavIcon
-                size={16}
-                className={isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}
-              />
-              {label}
+              <div className="flex items-center gap-2.5">
+                <NavIcon
+                  size={16}
+                  className={isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-450 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-350'}
+                />
+                {label}
+              </div>
+              {isActive && (
+                <span className="w-1 h-3.5 bg-indigo-650 dark:bg-indigo-450 rounded-full" />
+              )}
             </Link>
           );
         })}
       </nav>
+
 
       {/* User */}
       {user && (
