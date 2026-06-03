@@ -26,17 +26,20 @@ function GoogleCallbackInner() {
       .googleAuth(code, redirectUri)
       .then((res) => {
         const { user, accessToken, refreshToken } = res.data;
-        // Set in-memory access token
+        // Set in-memory access token FIRST — must happen before setState
+        // so that loadUser()'s guard (isAuthenticated && getAccessToken()) works.
         setAccessToken(accessToken);
         // Persist refresh token
         if (typeof window !== 'undefined') {
           localStorage.setItem('refreshToken', refreshToken);
         }
-        // Update full auth state (isAuthenticated + user)
+        // Update full auth state — explicitly clear isLoading to prevent
+        // the dashboard layout from being stuck in a loading state.
         useAuthStore.setState({ user, isAuthenticated: true, isLoading: false });
         router.replace('/dashboard');
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('[Google OAuth] Code exchange failed:', err?.response?.data ?? err?.message ?? err);
         router.replace('/auth/login?error=oauth_failed');
       });
   }, [searchParams, router]);

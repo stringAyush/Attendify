@@ -165,6 +165,7 @@ export default function LoginPage() {
                 redirect_uri: `${window.location.origin}/auth/google/callback`,
                 response_type: 'code',
                 scope: 'openid email profile',
+                access_type: 'offline',
                 prompt: 'select_account',
               });
               window.location.href = `https://accounts.google.com/o/oauth2/auth?${params}`;

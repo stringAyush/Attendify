@@ -44,9 +44,10 @@ export const useAuthStore = create<AuthState>()(
       (set, get) => ({
         user: null,
         isAuthenticated: false,
-        // Start as loading if we have a stored refresh token — this prevents the
-        // dashboard layout from redirecting to login before loadUser() completes.
-        // The value is corrected to false once loadUser finishes (success or fail).
+        // Start as loading if we have a stored refresh token — prevents the
+        // dashboard layout from redirecting to /login before loadUser() completes.
+        // IMPORTANT: isLoading is NOT persisted — it is always re-derived from
+        // localStorage on client boot. On server (SSR) it defaults to false.
         isLoading: typeof window !== 'undefined' && !!localStorage.getItem('refreshToken'),
 
         // ── Login ──────────────────────────────────────────
@@ -108,8 +109,11 @@ export const useAuthStore = create<AuthState>()(
             return;
           }
 
-          // Already authenticated in this session — skip
+          // Already authenticated in this session (e.g. just completed Google OAuth
+          // callback which set tokens in-memory + persisted state) — skip the refresh
+          // network call but ALWAYS clear the loading flag so the dashboard can render.
           if (get().isAuthenticated && getAccessToken() !== null) {
+            set({ isLoading: false });
             return;
           }
 

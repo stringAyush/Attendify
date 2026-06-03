@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { ToastProvider } from '@/components/ui';
@@ -9,10 +9,17 @@ export default function DashboardGroupLayout({ children }: { children: React.Rea
   const { isAuthenticated, isLoading, loadUser } = useAuthStore();
   const router = useRouter();
   const loadCalled = useRef(false);
+  // Guard against Zustand persist rehydration race: on first render the store
+  // has its initial values (isAuthenticated=false) before localStorage is read.
+  // We wait one tick for persist to rehydrate before evaluating auth state.
+  const [hasHydrated, setHasHydrated] = useState(false);
 
-  // Derive whether we should treat the initial render as loading.
-  // Without this, persisted `isAuthenticated: true` + in-memory `accessToken: null`
-  // causes an immediate redirect flash before loadUser() can recover the session.
+  useEffect(() => {
+    // Zustand persist rehydrates synchronously on mount when localStorage is
+    // available, but the React state update is batched. Using a microtask (or
+    // simply the first useEffect) guarantees we're past the rehydration point.
+    setHasHydrated(true);
+  }, []);
 
   // Attempt session recovery on first mount only
   useEffect(() => {
@@ -25,15 +32,17 @@ export default function DashboardGroupLayout({ children }: { children: React.Rea
   // NOTE: Dark mode is handled by ThemeInitializer in the root layout.
   // Do NOT touch classList.remove('dark') here — it would wipe the user's theme.
 
-  // Redirect unauthenticated users after loading completes
+  // Redirect unauthenticated users after loading completes AND hydration is done
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (hasHydrated && !isLoading && !isAuthenticated) {
       router.replace('/auth/login');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [hasHydrated, isAuthenticated, isLoading, router]);
 
-  // Loading state — shown while checking session
-  if (isLoading) {
+  // Show loading spinner while:
+  // 1. Persist store hasn't hydrated yet, OR
+  // 2. loadUser() is in-flight
+  if (!hasHydrated || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
