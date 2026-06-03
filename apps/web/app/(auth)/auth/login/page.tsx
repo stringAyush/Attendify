@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,6 +11,7 @@ import { Button, Input } from '@/components/ui';
 import { AttendifyMark } from '@/components/ui/icons';
 import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
+
 
 const loginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -41,11 +42,22 @@ const FEATURES = [
   },
 ];
 
-export default function LoginPage() {
+function LoginPageInner() {
   const { login } = useAuthStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam === 'oauth_failed') {
+      setError('Google authentication failed. Please make sure Google OAuth is configured and try again.');
+    } else if (errorParam) {
+      setError(errorParam);
+    }
+  }, [searchParams]);
+
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -259,3 +271,17 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="dark min-h-screen flex bg-slate-950 text-white font-sans items-center justify-center">
+        <Icon.ClipboardCheck size={28} className="animate-pulse text-indigo-400" />
+      </div>
+    }>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+

@@ -6,6 +6,7 @@ import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { setAccessToken } from '@/lib/api/client';
 import { Spinner } from '@/components/ui';
+import { getApiErrorMessage } from '@/lib/utils';
 
 function GoogleCallbackInner() {
   const router = useRouter();
@@ -16,7 +17,8 @@ function GoogleCallbackInner() {
     const error = searchParams.get('error');
 
     if (error || !code) {
-      router.replace('/auth/login?error=oauth_failed');
+      const errorMsg = error ? `Google OAuth error: ${error}` : 'No authorization code received from Google.';
+      router.replace(`/auth/login?error=${encodeURIComponent(errorMsg)}`);
       return;
     }
 
@@ -40,7 +42,8 @@ function GoogleCallbackInner() {
       })
       .catch((err) => {
         console.error('[Google OAuth] Code exchange failed:', err?.response?.data ?? err?.message ?? err);
-        router.replace('/auth/login?error=oauth_failed');
+        const errMsg = getApiErrorMessage(err);
+        router.replace(`/auth/login?error=${encodeURIComponent(errMsg)}`);
       });
   }, [searchParams, router]);
 

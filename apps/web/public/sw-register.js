@@ -6,7 +6,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/sw.js', { scope: '/' })
       .then(function (registration) {
-        if (process.env.NODE_ENV === 'development') {
+        if (window.location.hostname === 'localhost') {
           console.info('[SW] Registered:', registration.scope);
         }
       })

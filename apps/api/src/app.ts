@@ -63,8 +63,13 @@ app.use(
       // Allow any extra origins added via env
       if (extraOrigins.has(origin)) return callback(null, true);
 
-      // In development — allow all localhost variants
-      if (isDev && DEV_ORIGINS.has(origin)) return callback(null, true);
+      // In development — allow all localhost variants and local network IPs
+      if (isDev) {
+        if (DEV_ORIGINS.has(origin)) return callback(null, true);
+        if (/^http:\/\/(192\.168|172\.(1[6-9]|2[0-9]|3[0-1])|10)\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin)) {
+          return callback(null, true);
+        }
+      }
 
       // Capacitor Android apps call from capacitor:// origin
       if (origin === 'capacitor://localhost') return callback(null, true);
