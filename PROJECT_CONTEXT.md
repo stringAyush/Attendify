@@ -554,6 +554,8 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 | **Web Build (Vercel)** | Turbopack PostCSS resolution error | Moved `@tailwindcss/postcss` and other build dependencies to `dependencies` | Prevents Vercel production prune from omitting packages needed to process Tailwind v4. |
 | **CORS policy** | Dynamic Vercel previews blocked | Added dynamic check for `.vercel.app` suffixes | Allows all pull request and branch deployments on Vercel to securely connect to Render database endpoints without manual config updates. |
 | **Auth / Signup** | Validation failed on optional institution | Added `.or(z.literal(''))` to `institutionName` in `signupSchema` | Allows blank input on optional form fields from frontend serializers. |
+| **Auth / Google OAuth** | First Google login redirects user back to `/auth/login`; works only on second attempt | 3-part fix: **(1)** `auth.store.ts` — `loadUser()` early-return guard now calls `set({ isLoading: false })` before returning when already authenticated (previously skipped silently, leaving dashboard stuck in loading state). **(2)** `(dashboard)/layout.tsx` — Added `hasHydrated` state flag (set via `useEffect`) so the redirect-to-login check waits for Zustand `persist` async rehydration to complete. **(3)** `login/page.tsx` — Added `access_type: 'offline'` to Google OAuth redirect URL params so the authorization code exchange always returns a usable refresh token. | `loadUser()` called `return` without setting `isLoading: false`; Zustand `persist` rehydrates async so `isAuthenticated` was `false` on first render even with valid localStorage; Google auth code needed `access_type: 'offline'` to reliably exchange for tokens. |
+
 
 ---
 
