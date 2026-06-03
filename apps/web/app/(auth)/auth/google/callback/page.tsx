@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/store/auth.store';
@@ -11,6 +11,7 @@ import { getApiErrorMessage } from '@/lib/utils';
 function GoogleCallbackInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const calledRef = useRef(false);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -21,6 +22,9 @@ function GoogleCallbackInner() {
       router.replace(`/auth/login?error=${encodeURIComponent(errorMsg)}`);
       return;
     }
+
+    if (calledRef.current) return;
+    calledRef.current = true;
 
     const redirectUri = window.location.origin + '/auth/google/callback';
 
