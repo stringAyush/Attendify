@@ -578,4 +578,53 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 | `apps/web/app/(dashboard)/students/detail/page.tsx` | Static student detail (replaces dynamic `[id]`) |
 | `apps/web/app/offline/page.tsx` | SW offline fallback page |
 | `docker-compose.yml` | PostgreSQL container definition |
+| `apps/web/components/ui/index.tsx` | All shared UI primitives (Button, Input, Card, Badge, Modal, Toast, etc.) |
+| `apps/web/components/shared/Layout.tsx` | DashboardLayout, Sidebar, MobileBottomNav, Header |
+| `apps/web/app/globals.css` | Design system tokens, base styles, safe-area utilities |
+
+---
+
+## 18. UI / Design System Architecture (June 2026)
+
+### Design Language
+- **Minimal & professional** — no glassmorphism, no heavy gradients, no oversized radii
+- **Spacing**: base unit 4px. All spacing uses Tailwind scale (p-3=12px, p-4=16px, p-5=20px)
+- **Typography**: Inter via `next/font`. Label text: `text-xs tracking-wide font-medium`. Body: `text-sm`. Page titles: `text-lg font-semibold`
+- **Colors**: indigo-600 as primary accent. Semantic status colors: emerald/amber/red/sky
+- **Border radius**: `rounded-lg` (8px) for buttons/inputs/cards. `rounded-xl` (12px) for modals/page cards
+- **Shadows**: Minimal — `shadow-sm` on cards only, no colored shadows
+- **Dark mode**: Consistent `dark:` variants on all components. Background: `slate-950`, Cards: `slate-900`, Borders: `slate-800`
+
+### Component Rules
+| Component | Size system | Notes |
+|-----------|-------------|-------|
+| `Button` | `h-7/h-9/h-10` (sm/md/lg) | No `active:scale-95` animation |
+| `Input` | `h-9` fixed | Label: `text-xs tracking-wide` |
+| `Card` | border only, no shadow by default | `clickable` prop for hover states (NOT `hover`) |
+| `Badge` | `rounded-md` | No `rounded-full` |
+| `Avatar` | Semantic bg colors (not gradients) | 6 color variants based on name charCode |
+| `Toast` | SVG icons (not emoji) | Left border accent, slides up from bottom |
+| `Modal` | Bottom-sheet on mobile, centered on desktop | `rounded-t-2xl sm:rounded-xl` |
+
+### Navigation
+- **Desktop**: Fixed left sidebar, 224px wide (`w-56`), no icon-only state
+- **Mobile**: Top header (menu hamburger) + fixed bottom tab bar with 5 primary nav items
+- **Bottom nav offset**: All page `main` has `pb-24 lg:pb-7` to account for mobile bottom nav
+- **Safe areas**: `.safe-bottom` class on `MobileBottomNav` for Capacitor notch handling
+
+### Login Page
+- **Left panel**: Dark (`slate-950`) with real product features — no fake stats
+- **Right panel**: Clean form, `h-9` inputs, show/hide password toggle
+- Error state: icon + message in bordered box (not colored background blocks)
+
+### Key Files Changed
+| File | What Changed |
+|------|-------------|
+| `globals.css` | Full rewrite — design tokens, professional CSS reset, safe-area utilities |
+| `components/ui/index.tsx` | All primitives rewritten — new sizing system, better accessibility |
+| `components/shared/Layout.tsx` | Added `MobileBottomNav`, narrowed sidebar, `headerAction` slot |
+| `components/shared/OfflineBanner.tsx` | Subtle amber-50 tinted banner instead of harsh orange |
+| `app/(auth)/auth/login/page.tsx` | Dark left panel with real features, show/hide password, clean form |
+| `app/(dashboard)/dashboard/page.tsx` | Minimal stat cards, side-by-side layout, no emoji quick actions |
+| `app/offline/page.tsx` | Compact, professional offline state |
 
