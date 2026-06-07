@@ -95,9 +95,17 @@ router.post(
       subjectId,
     });
 
+    // Fetch teacher display name for the PDF header
+    const userRecord = await prisma.user.findUnique({
+      where: { id: req.user!.userId },
+      select: { name: true },
+    });
+
     await ReportService.exportToPdf(
       {
-        className: `${report.class.name} ${report.class.section ?? ''}`.trim(),
+        className: report.class.name,
+        classSection: report.class.section ?? undefined,
+        teacherName: userRecord?.name ?? undefined,
         period: { startDate, endDate },
         studentSummaries: report.studentSummaries,
       },

@@ -46,11 +46,6 @@ const FEATURES = [
   },
 ];
 
-const SOCIAL_PROOF = [
-  { name: 'Dr. Meera S.', role: 'Dean, MCA Dept.', initials: 'MS' },
-  { name: 'Prof. Raj K.', role: 'HOD, Computer Sci.', initials: 'RK' },
-  { name: 'Ms. Priya T.', role: 'Class Teacher', initials: 'PT' },
-];
 
 function LoginPageInner() {
   const { login } = useAuthStore();
@@ -165,29 +160,15 @@ function LoginPageInner() {
             </div>
           </motion.div>
 
-          {/* Social proof */}
+          {/* Institution type tags */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
             className="pt-6 border-t border-white/[0.07]"
           >
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {SOCIAL_PROOF.map((p) => (
-                  <div
-                    key={p.initials}
-                    className="w-7 h-7 rounded-full bg-indigo-600/40 border border-white/20 flex items-center justify-center text-[9px] font-extrabold text-white"
-                  >
-                    {p.initials}
-                  </div>
-                ))}
-              </div>
-              <p className="text-[11px] text-slate-500">
-                Trusted by <span className="text-slate-300 font-semibold">200+ educators</span> across India
-              </p>
-            </div>
-            <div className="flex gap-2 mt-3 flex-wrap">
+            <p className="text-[11px] text-slate-500 mb-3">Built for educational institutions</p>
+            <div className="flex gap-2 flex-wrap">
               {['Schools', 'Colleges', 'Coaching Institutes', 'Universities'].map((tag) => (
                 <span key={tag} className="text-[10px] font-semibold text-slate-400 bg-white/[0.05] border border-white/[0.06] rounded-md px-2.5 py-1">
                   {tag}

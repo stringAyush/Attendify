@@ -33,9 +33,9 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 // ─── Greeting ─────────────────────────────────────────────────
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return { text: 'Good morning', icon: '🌤️' };
-  if (h < 17) return { text: 'Good afternoon', icon: '☀️' };
-  return { text: 'Good evening', icon: '🌙' };
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
 }
 
 // ─── At-Risk Student Row ──────────────────────────────────────
@@ -128,7 +128,7 @@ export default function DashboardPage() {
         >
           <div>
             <h1 className="text-2xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
-              {greeting.text}, {user?.name?.split(' ')[0]} 👋
+              {greeting}, {user?.name?.split(' ')[0]}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}

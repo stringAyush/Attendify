@@ -433,11 +433,10 @@ function CreateSessionModal({
 }) {
   const { toast } = useToast();
   const [form, setForm] = useState({
-    classId: '', subjectId: '', date: new Date().toISOString().split('T')[0], mode: 'MANUAL', notes: '',
+    classId: '', subjectId: '', date: new Date().toISOString().split('T')[0], notes: '',
   });
   const [subjects, setSubjects] = useState<{ id: string; name: string }[]>([]);
   const [creating, setCreating] = useState(false);
-  const [step, setStep] = useState<1 | 2>(1);
 
   useEffect(() => {
     if (form.classId) {
@@ -460,7 +459,7 @@ function CreateSessionModal({
         classId: form.classId,
         subjectId: form.subjectId,
         date: form.date,
-        mode: form.mode as 'MANUAL' | 'QR' | 'PIN',
+        mode: 'MANUAL',
         notes: form.notes || undefined,
       });
       onClose();
@@ -473,15 +472,8 @@ function CreateSessionModal({
     }
   };
 
-  const modeOptions = [
-    { value: 'MANUAL', label: 'Manual', desc: 'Mark each student', Icon: Icon.PenLine },
-    { value: 'QR',     label: 'QR Code', desc: 'Students scan QR', Icon: Icon.QrCode },
-    { value: 'PIN',    label: 'PIN Code', desc: 'Share a PIN code', Icon: Icon.Lock },
-  ];
-
   const handleClose = () => {
-    setStep(1);
-    setForm({ classId: '', subjectId: '', date: new Date().toISOString().split('T')[0], mode: 'MANUAL', notes: '' });
+    setForm({ classId: '', subjectId: '', date: new Date().toISOString().split('T')[0], notes: '' });
     onClose();
   };
 
@@ -489,104 +481,60 @@ function CreateSessionModal({
     <Modal
       open={open}
       onClose={handleClose}
-      title="Create Attendance Session"
-      description="Step 1 of 2 — Select class and subject"
+      title="New Attendance Session"
+      description="Select class, subject, and date to create a session"
       size="md"
     >
-      {step === 1 ? (
-        <div className="space-y-4">
-          <Select
-            label="Class *"
-            value={form.classId}
-            onChange={(e) => setForm((f) => ({ ...f, classId: e.target.value, subjectId: '' }))}
-            options={[
-              { value: '', label: 'Select a class...' },
-              ...classes.map((c) => ({ value: c.id, label: `${c.name}${c.section ? ` · ${c.section}` : ''}` })),
-            ]}
-          />
-          <Select
-            label="Subject *"
-            value={form.subjectId}
-            onChange={(e) => setForm((f) => ({ ...f, subjectId: e.target.value }))}
-            disabled={!subjects.length}
-            options={[
-              { value: '', label: subjects.length ? 'Select a subject...' : 'Select a class first' },
-              ...subjects.map((s) => ({ value: s.id, label: s.name })),
-            ]}
-          />
-          {form.classId && !subjects.length && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1.5">
-              <Icon.AlertTriangle size={13} /> No subjects for this class. Add subjects first.
-            </p>
-          )}
-          <Input
-            label="Date *"
-            type="date"
-            value={form.date}
-            onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-          />
-          <div className="flex gap-3 pt-2">
-            <Button variant="secondary" className="flex-1" onClick={handleClose}>Cancel</Button>
-            <Button
-              className="flex-1"
-              onClick={() => setStep(2)}
-              disabled={!form.classId || !form.subjectId || !form.date}
-            >
-              Next Step →
-            </Button>
-          </div>
+      <div className="space-y-4">
+        <Select
+          label="Class *"
+          value={form.classId}
+          onChange={(e) => setForm((f) => ({ ...f, classId: e.target.value, subjectId: '' }))}
+          options={[
+            { value: '', label: 'Select a class...' },
+            ...classes.map((c) => ({ value: c.id, label: `${c.name}${c.section ? ` · ${c.section}` : ''}` })),
+          ]}
+        />
+        <Select
+          label="Subject *"
+          value={form.subjectId}
+          onChange={(e) => setForm((f) => ({ ...f, subjectId: e.target.value }))}
+          disabled={!subjects.length}
+          options={[
+            { value: '', label: subjects.length ? 'Select a subject...' : 'Select a class first' },
+            ...subjects.map((s) => ({ value: s.id, label: s.name })),
+          ]}
+        />
+        {form.classId && !subjects.length && (
+          <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1.5">
+            <Icon.AlertTriangle size={13} /> No subjects found. Add subjects to this class first.
+          </p>
+        )}
+        <Input
+          label="Date *"
+          type="date"
+          value={form.date}
+          onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
+        />
+        <Input
+          label="Notes"
+          placeholder="Optional notes for this session"
+          value={form.notes}
+          onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+        />
+        <div className="flex gap-3 pt-2">
+          <Button variant="secondary" className="flex-1" onClick={handleClose}>Cancel</Button>
+          <Button
+            className="flex-1"
+            loading={creating}
+            onClick={handleCreate}
+            disabled={!form.classId || !form.subjectId || !form.date}
+          >
+            <Icon.Zap size={14} />
+            Create Session
+          </Button>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Step 2: Mode selection */}
-          <div>
-            <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 tracking-wide">Marking Method *</p>
-            <div className="grid grid-cols-3 gap-2">
-              {modeOptions.map(({ value, label, desc, Icon: ModeIcon }) => (
-                <button
-                  key={value}
-                  onClick={() => setForm((f) => ({ ...f, mode: value }))}
-                  className={`flex flex-col items-center gap-2 py-4 px-2 rounded-xl border text-center transition-all ${
-                    form.mode === value
-                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400'
-                      : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900'
-                  }`}
-                >
-                  <ModeIcon size={20} />
-                  <div>
-                    <p className="text-xs font-bold">{label}</p>
-                    <p className="text-[10px] text-slate-400 leading-tight">{desc}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Session summary preview */}
-          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1">
-            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Session Preview</p>
-            {[
-              { label: 'Class', value: classes.find((c) => c.id === form.classId)?.name ?? '—' },
-              { label: 'Subject', value: subjects.find((s) => s.id === form.subjectId)?.name ?? '—' },
-              { label: 'Date', value: form.date },
-              { label: 'Mode', value: form.mode },
-            ].map(({ label, value }) => (
-              <div key={label} className="flex justify-between text-xs">
-                <span className="text-slate-400">{label}</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-300">{value}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-3 pt-1">
-            <Button variant="secondary" className="flex-1" onClick={() => setStep(1)}>← Back</Button>
-            <Button className="flex-1" loading={creating} onClick={handleCreate}>
-              <Icon.Zap size={14} />
-              Create Session
-            </Button>
-          </div>
-        </div>
-      )}
+      </div>
     </Modal>
   );
 }

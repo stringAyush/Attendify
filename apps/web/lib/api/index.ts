@@ -231,6 +231,7 @@ export interface AttendanceSessionItem {
   mode: 'MANUAL' | 'QR' | 'PIN';
   isFinalized: boolean;
   notes: string | null;
+  createdAt?: string;
   subject?: { name: string; code: string | null };
   class?: { name: string; section: string | null };
   _count?: { records: number };
