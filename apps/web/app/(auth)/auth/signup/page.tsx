@@ -6,8 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { Button, Input } from '@/components/ui';
+import { AttendifyMark } from '@/components/ui/icons';
 import * as Icon from '@/components/ui/icons';
 import { getApiErrorMessage } from '@/lib/utils';
 
@@ -76,26 +78,32 @@ export default function SignupPage() {
 
   return (
     <div className="dark min-h-screen flex bg-slate-950 text-white font-sans">
-      {/* Left panel — engaging sidebar (matching login) */}
-      <div className="hidden lg:flex flex-col w-[48%] xl:w-[50%] flex-shrink-0 bg-gradient-to-br from-indigo-750 via-indigo-900 to-purple-950 p-12 xl:p-16 relative overflow-hidden justify-between border-r border-slate-900">
+      {/* ── Left panel ── */}
+      <div className="hidden lg:flex flex-col w-[48%] xl:w-[50%] flex-shrink-0 relative overflow-hidden border-r border-white/[0.06]">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950" />
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
+            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
           }}
         />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
 
-        {/* Logo */}
-        <div className="relative flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/10">
-            <Icon.ClipboardCheck size={16} className="text-white" />
+        <div className="relative flex flex-col h-full px-12 xl:px-16 py-10 justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <AttendifyMark size={30} />
+            <span className="text-white font-extrabold text-base tracking-tight">Attendify</span>
           </div>
-          <span className="text-white text-base font-extrabold tracking-tight">Attendify</span>
-        </div>
 
-        {/* Hero Section */}
-        <div className="relative my-auto py-8">
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="relative my-auto"
+          >
           <h1 className="text-4xl xl:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Get started in<br />under 2 minutes
           </h1>
@@ -103,34 +111,29 @@ export default function SignupPage() {
             Create your free account. Start registering students, logging sessions, and generating compliant reports today.
           </p>
 
-          {/* 2x2 Feature Grid */}
-          <div className="grid grid-cols-2 gap-4 xl:gap-6">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="p-5 rounded-xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-md flex flex-col justify-between min-h-[145px] hover:border-white/[0.12] transition-colors"
-              >
-                <div className="w-9 h-9 rounded-lg bg-white/[0.08] border border-white/[0.04] flex items-center justify-center text-white mb-4">
-                  {f.icon}
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white leading-snug">{f.title}</h3>
-                  <p className="text-[11px] text-indigo-200/60 mt-1 leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+            {/* Feature grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {FEATURES.map((f, i) => (
+                <motion.div
+                  key={f.title}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.2 + i * 0.07 }}
+                  className="p-4 rounded-xl border border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center mb-3">
+                    {f.icon}
+                  </div>
+                  <h3 className="text-xs font-bold text-white">{f.title}</h3>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{f.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-        {/* Tag System */}
-        <div className="relative pt-6 border-t border-white/[0.08] flex items-center gap-3.5 flex-wrap">
-          <span className="text-[10px] font-bold text-indigo-200/50 uppercase tracking-widest">Designed for</span>
-          <div className="flex gap-2 flex-wrap">
+          <div className="pt-6 border-t border-white/[0.07] flex gap-2 flex-wrap">
             {['Schools', 'Colleges', 'Coaching Centers', 'Universities'].map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] font-semibold text-indigo-100 bg-white/[0.08] border border-white/[0.04] rounded-lg px-3 py-1"
-              >
+              <span key={tag} className="text-[10px] font-semibold text-slate-400 bg-white/[0.05] border border-white/[0.06] rounded-md px-2.5 py-1">
                 {tag}
               </span>
             ))}
@@ -140,13 +143,16 @@ export default function SignupPage() {
 
       {/* Right panel — signup form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-950">
-        <div className="w-full max-w-sm space-y-7">
-          {/* Mobile logo header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-sm space-y-7"
+        >
+          {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <Icon.ClipboardCheck size={14} className="text-white" />
-            </div>
-            <span className="text-base font-extrabold text-white tracking-tight">Attendify</span>
+            <AttendifyMark size={28} />
+            <span className="text-white font-extrabold text-sm tracking-tight">Attendify</span>
           </div>
 
           <div>
@@ -258,7 +264,7 @@ export default function SignupPage() {
               Sign in
             </Link>
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
