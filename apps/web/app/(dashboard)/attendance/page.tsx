@@ -418,10 +418,7 @@ function SessionCard({
         <div className="flex items-center gap-3 mt-1">
           <p className="text-[11px] text-slate-400">{formatDate(session.date)}</p>
           {createdTime && (
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
-              <Icon.Clock size={10} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />
-              {createdTime}
-            </span>
+            <span className="text-[11px] text-slate-400">{createdTime}</span>
           )}
         </div>
         <div className="mt-3 pt-3 border-t border-slate-50 dark:border-slate-800/40">
