@@ -279,23 +279,23 @@ function MarkAttendanceView({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15, delay: i < 20 ? i * 0.012 : 0 }}
-                    className="flex items-center gap-3.5 px-4 py-3 border-b border-slate-50 dark:border-slate-800/50 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/20 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3.5 border-b border-slate-50 dark:border-slate-800/50 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/20 transition-colors"
                   >
-                    {/* Avatar */}
-                    <Avatar name={student.name} size="sm" className="flex-shrink-0" />
-
-                    {/* Name + roll */}
-                    <div className="flex-1 min-w-0 pr-1">
-                      <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug break-words">
-                        {student.name}
-                      </p>
-                      <p className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">
-                        Roll: {student.rollNumber ?? '—'}
-                      </p>
+                    {/* Student Info (Avatar + Name + Roll) */}
+                    <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                      <Avatar name={student.name} size="sm" className="flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug break-words">
+                          {student.name}
+                        </p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
+                          Roll: {student.rollNumber ?? '—'}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Status chips */}
-                    <div className="flex gap-1 sm:gap-1.5 flex-shrink-0">
+                    <div className="grid grid-cols-4 gap-2 w-full sm:flex sm:w-auto sm:gap-1.5 flex-shrink-0">
                       {(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY'] as AttStatus[]).map((s) => (
                         <AttendanceChip
                           key={s}
@@ -303,6 +303,7 @@ function MarkAttendanceView({
                           selected={currentStatus === s}
                           disabled={session.isFinalized}
                           onClick={() => markStudent(student.id, s)}
+                          className="w-full sm:w-auto"
                         />
                       ))}
                     </div>

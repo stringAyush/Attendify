@@ -774,6 +774,7 @@ interface AttendanceChipProps {
   onClick: () => void;
   disabled?: boolean;
   compact?: boolean;
+  className?: string;
 }
 
 const CHIP_LABELS: Record<AttStatus, string> = {
@@ -790,7 +791,7 @@ const CHIP_ACTIVE: Record<AttStatus, string> = {
   HALF_DAY: 'att-chip-halfday',
 };
 
-export function AttendanceChip({ status, selected, onClick, disabled = false, compact = false }: AttendanceChipProps) {
+export function AttendanceChip({ status, selected, onClick, disabled = false, compact = false, className }: AttendanceChipProps) {
   return (
     <button
       onClick={onClick}
@@ -798,7 +799,8 @@ export function AttendanceChip({ status, selected, onClick, disabled = false, co
       className={cn(
         'att-chip',
         compact ? 'h-9 min-w-[2.5rem] text-[11px]' : 'h-10 min-w-[2.5rem] sm:h-11 sm:min-w-[3.5rem] text-[11px] sm:text-xs',
-        selected ? CHIP_ACTIVE[status] : 'att-chip-idle'
+        selected ? CHIP_ACTIVE[status] : 'att-chip-idle',
+        className
       )}
     >
       {CHIP_LABELS[status]}
