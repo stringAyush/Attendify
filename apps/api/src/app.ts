@@ -94,17 +94,17 @@ const isDev = config.NODE_ENV === 'development';
 const isTest = config.NODE_ENV === 'test';
 
 const globalLimiter = rateLimit({
-  windowMs: config.RATE_LIMIT_WINDOW_MS,    // 15 minutes default
-  max: isDev ? 10_000 : config.RATE_LIMIT_MAX, // Unlimited in dev
+  windowMs: config.RATE_LIMIT_WINDOW_MS,    // 15 minutes (default)
+  max: isDev ? 10_000 : config.RATE_LIMIT_MAX, // 500 in production, unlimited in dev
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest || isDev,              // Skip entirely in dev & test
-  message: { success: false, error: 'Too many requests, please try again later' },
+  message: { success: false, error: 'Too many requests, please try again in a few minutes' },
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isDev ? 1000 : 10,
+  max: isDev ? 1000 : 15,                  // Raised from 10 → 15 to allow login retries
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest || isDev,
