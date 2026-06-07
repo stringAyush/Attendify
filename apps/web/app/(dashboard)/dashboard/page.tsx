@@ -341,12 +341,19 @@ export default function DashboardPage() {
               </Link>
             </div>
             <Card className="px-5 py-1">
-              {/* Mocked from stats; in production this would come from API */}
-              <div className="py-8 text-center">
-                <Icon.CheckCircle size={28} className="text-emerald-400 mx-auto mb-2" />
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">All students on track</p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No students below the 75% attendance threshold.</p>
-              </div>
+              {stats.atRiskStudents && stats.atRiskStudents.length > 0 ? (
+                <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                  {stats.atRiskStudents.map((student) => (
+                    <AtRiskRow key={student.id} student={student} />
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center">
+                  <Icon.CheckCircle size={28} className="text-emerald-400 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">All students on track</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No students below the 75% attendance threshold.</p>
+                </div>
+              )}
             </Card>
           </motion.div>
         )}

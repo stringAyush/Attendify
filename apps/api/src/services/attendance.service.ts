@@ -358,6 +358,12 @@ export const AttendanceService = {
   },
 
   async getDashboardStats(teacherId: string) {
+    const teacherClasses = await prisma.class.findMany({
+      where: { teacherId, deletedAt: null },
+      select: { id: true },
+    });
+    const classIds = teacherClasses.map((c) => c.id);
+
     const [
       totalClasses,
       totalStudents,
@@ -367,7 +373,7 @@ export const AttendanceService = {
       prisma.class.count({ where: { teacherId, deletedAt: null } }),
       prisma.student.count({
         where: {
-          classId: { in: await prisma.class.findMany({ where: { teacherId, deletedAt: null }, select: { id: true } }).then((cs) => cs.map((c) => c.id)) },
+          classId: { in: classIds },
           deletedAt: null,
           isActive: true,
         },
@@ -430,6 +436,52 @@ export const AttendanceService = {
       return { ...rest, stats: { total, present, absent, late } };
     });
 
+    // At-risk students (attendance percentage < 75%, excluding zero-session students)
+    const activeStudents = await prisma.student.findMany({
+      where: {
+        classId: { in: classIds },
+        deletedAt: null,
+        isActive: true,
+      },
+      include: {
+        attendanceRecords: {
+          select: { status: true },
+        },
+        enrollments: {
+          include: {
+            class: {
+              select: { name: true, section: true },
+            },
+          },
+        },
+      },
+    });
+
+    const atRiskStudents = activeStudents
+      .map((student) => {
+        const total = student.attendanceRecords.length;
+        const present = student.attendanceRecords.filter(
+          (r) => r.status === 'PRESENT' || r.status === 'LATE'
+        ).length;
+        const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
+
+        const activeEnrollment = student.enrollments.find((e) => e.classId === student.classId);
+        const cls = activeEnrollment?.class;
+        const className = cls ? (cls.name + (cls.section ? ` (${cls.section})` : '')) : 'Unknown Class';
+
+        return {
+          id: student.id,
+          name: student.name,
+          rollNumber: student.rollNumber,
+          attendanceRate: percentage,
+          totalSessions: total,
+          className,
+        };
+      })
+      .filter((s) => s.totalSessions > 0 && s.attendanceRate < 75)
+      .sort((a, b) => a.attendanceRate - b.attendanceRate)
+      .slice(0, 5);
+
     return {
       totalClasses,
       totalStudents,
@@ -437,6 +489,7 @@ export const AttendanceService = {
       averageAttendance,
       recentSessions: mappedRecentSessions,
       monthlyTrend,
+      atRiskStudents,
     };
   },
 };

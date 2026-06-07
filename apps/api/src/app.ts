@@ -16,6 +16,9 @@ import { reportRouter } from '@/routes/report.routes';
 
 const app = express();
 
+// Enable trust proxy to get correct client IP under reverse proxies/load balancers
+app.set('trust proxy', 1);
+
 // ─── Security Middleware ─────────────────────────────────────
 app.use(
   helmet({

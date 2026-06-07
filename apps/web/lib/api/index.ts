@@ -242,6 +242,15 @@ export interface AttendanceSessionWithRecords extends AttendanceSessionItem {
   records: AttendanceRecord[];
 }
 
+export interface AtRiskStudent {
+  id: string;
+  name: string;
+  rollNumber: string;
+  attendanceRate: number;
+  totalSessions: number;
+  className: string;
+}
+
 export interface DashboardStats {
   totalClasses: number;
   totalStudents: number;
@@ -249,6 +258,7 @@ export interface DashboardStats {
   averageAttendance: number;
   recentSessions: AttendanceSessionItem[];
   monthlyTrend: { date: string; present: number; absent: number; late: number; percentage: number }[];
+  atRiskStudents?: AtRiskStudent[];
 }
 
 export interface AttendanceAnalytics {
