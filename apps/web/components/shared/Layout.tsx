@@ -28,6 +28,12 @@ const NAV_GROUPS = [
       { href: '/reports',    label: 'Reports',    NavIcon: Icon.FileText },
     ],
   },
+  {
+    label: 'Account',
+    items: [
+      { href: '/settings',   label: 'Settings',   NavIcon: Icon.Settings },
+    ],
+  },
 ];
 
 const MOBILE_NAV = [
@@ -130,23 +136,27 @@ function SidebarContent({
       {user && (
         <div className={cn('px-2 py-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0', collapsed && 'flex flex-col items-center gap-2')}>
           {!collapsed ? (
-            <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-              <Avatar name={user.name} src={user.avatar} size="sm" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{user.name}</p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
-              </div>
+            <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+              <Link href="/settings" onClick={onClose} className="flex flex-1 items-center gap-2.5 min-w-0 group/profile">
+                <Avatar name={user.name} src={user.avatar} size="sm" className="group-hover/profile:ring-2 group-hover/profile:ring-indigo-500 transition-all flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate group-hover/profile:text-indigo-600 dark:group-hover/profile:text-indigo-400 transition-colors">{user.name}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
+                </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 title="Sign out"
-                className="p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors opacity-0 group-hover:opacity-100"
+                className="p-1.5 rounded-md text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors md:opacity-0 md:group-hover:opacity-100 flex-shrink-0"
               >
                 <Icon.LogOut size={13} />
               </button>
             </div>
           ) : (
             <>
-              <Avatar name={user.name} src={user.avatar} size="sm" />
+              <Link href="/settings" onClick={onClose} title="Settings">
+                <Avatar name={user.name} src={user.avatar} size="sm" className="hover:ring-2 hover:ring-indigo-500 transition-all" />
+              </Link>
               <button
                 onClick={handleLogout}
                 title="Sign out"

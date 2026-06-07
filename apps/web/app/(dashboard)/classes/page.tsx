@@ -62,7 +62,7 @@ function ClassCard({
             {initials}
           </div>
           {/* Actions — reveal on hover */}
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+          <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-150">
             <button
               onClick={() => onManageSubjects(cls)}
               className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-colors"
@@ -131,7 +131,7 @@ function SubjectRow({
         <Badge variant="default" size="sm">{subject._count?.sessions ?? 0} sessions</Badge>
         <button
           onClick={() => onDelete(subject.id)}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors md:opacity-0 md:group-hover:opacity-100"
         >
           <Icon.Trash2 size={14} />
         </button>

@@ -638,9 +638,14 @@ Test cleanup: deletes the test user from DB in `afterAll`.
 | `app/(dashboard)/attendance/page.tsx` | Redesigned Attendance page and student marking touch targets using custom Select, Input, and Modal primitives |
 | `app/(dashboard)/classes/page.tsx` | Redesigned Classes list card interactions, academic years list, and modals |
 | `app/(dashboard)/classes/detail/ClassDetailClient.tsx` | Polished Class Detail visual layout, subject management, and recent session links |
-| `app/(dashboard)/students/page.tsx` | Standardized bulk import CSV dropzone design, clean action buttons, unified table spacing and search |
+| `app/(dashboard)/students/page.tsx` | Standardized bulk import CSV dropzone design, clean action buttons, unified table spacing and search. Actions are always visible on mobile/touch devices via CSS media queries. |
 | `app/(dashboard)/students/detail/StudentDetailClient.tsx` | Replaced status emojis and text pagination markers with proper icon chevron buttons and structured stats |
 | `app/offline/page.tsx` | Replaced raw SVG with new WifiOff icon |
+| `app/(dashboard)/settings/page.tsx` | [NEW] Settings page featuring user profile update, dynamic light/dark/system theme switching, notification options, list of classes, and simulated password change/account delete flows |
+| `components/shared/Layout.tsx` | Integrated Settings link into sidebar layout and user avatar profile link. Made logout action always visible on mobile devices |
+| `components/ui/index.tsx` | Resized `AttendanceChip` layout sizes dynamically on mobile to prevent layout clipping and name truncation |
+| `package.json` | Removed unused/redundant frontend and api dependencies (@radix-ui/*, date-fns, dexie, firebase-admin) to reduce build sizing and security footprint |
+
 
 
 

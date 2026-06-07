@@ -87,7 +87,7 @@ function StudentRow({
       </td>
       {/* Actions */}
       <td className="px-4 py-3">
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+        <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-100">
           <Link
             href={`/students/detail?id=${student.id}`}
             className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-colors"

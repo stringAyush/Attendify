@@ -797,7 +797,7 @@ export function AttendanceChip({ status, selected, onClick, disabled = false, co
       disabled={disabled}
       className={cn(
         'att-chip',
-        compact ? 'h-9 min-w-[2.75rem] text-[11px]' : 'h-11 min-w-[3.5rem]',
+        compact ? 'h-9 min-w-[2.5rem] text-[11px]' : 'h-10 min-w-[2.5rem] sm:h-11 sm:min-w-[3.5rem] text-[11px] sm:text-xs',
         selected ? CHIP_ACTIVE[status] : 'att-chip-idle'
       )}
     >
