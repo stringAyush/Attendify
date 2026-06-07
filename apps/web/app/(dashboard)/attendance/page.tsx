@@ -60,7 +60,7 @@ function SessionSummaryOverlay({
             { label: 'Present', value: totals.present, color: 'text-emerald-600 dark:text-emerald-400' },
             { label: 'Absent',  value: totals.absent,  color: 'text-red-600 dark:text-red-400' },
             { label: 'Late',    value: totals.late,    color: 'text-amber-600 dark:text-amber-400' },
-            { label: 'Half',    value: halfDayCount, color: 'text-sky-600 dark:text-sky-400' },
+            { label: 'Half',    value: totals.halfDay, color: 'text-sky-600 dark:text-sky-400' },
           ].map((s) => (
             <div key={s.label} className="flex flex-col items-center py-4">
               <span className={`text-2xl font-extrabold tabular-nums ${s.color}`}>{s.value}</span>
