@@ -108,8 +108,8 @@ export const apiClient: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
-  // 15s timeout for normal requests; mobile networks can be slow
-  timeout: 15_000,
+  // 60s timeout for normal requests to accommodate backend cold starts on Render free tier
+  timeout: 60_000,
   withCredentials: false,
 });
 
@@ -231,7 +231,7 @@ apiClient.interceptors.response.use(
         const refreshResponse = await axios.post(
           `${API_URL}/api/auth/refresh`,
           { refreshToken: storedRefreshToken },
-          { headers: { 'Content-Type': 'application/json' }, timeout: 10_000 }
+          { headers: { 'Content-Type': 'application/json' }, timeout: 60_000 }
         );
 
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } =

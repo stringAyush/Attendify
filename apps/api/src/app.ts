@@ -107,7 +107,7 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: isDev ? 1000 : 15,                  // Raised from 10 → 15 to allow login retries
+  max: isDev ? 1000 : 100,                  // Raised to 100 to prevent rate-limiting legitimate users
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest || isDev,
@@ -118,8 +118,8 @@ app.use(globalLimiter);
 
 // ─── General Middleware ──────────────────────────────────────
 app.use(compression());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
 if (!isTest) {

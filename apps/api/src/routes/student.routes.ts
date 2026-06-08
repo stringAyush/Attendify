@@ -16,7 +16,7 @@ import { prisma } from '@/config/database';
 import { z } from 'zod';
 
 const router = Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
 router.use(authenticate);
 
