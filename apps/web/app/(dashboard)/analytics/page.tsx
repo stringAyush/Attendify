@@ -10,7 +10,7 @@ import { getApiErrorMessage } from '@/lib/utils';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend, RadarChart, Radar,
-  PolarGrid, PolarAngleAxis,
+  PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';
 
 const CHART_COLORS = ['#4f46e5', '#dc2626', '#d97706', '#059669', '#7c3aed'];
@@ -70,8 +70,8 @@ export default function AnalyticsPage() {
       ]
     : [];
 
-  const subjectRadar = analytics?.subjectWise.map((s) => ({
-    subject: s.subjectName.slice(0, 10),
+  const subjectRadar = analytics?.subjectWise?.map((s) => ({
+    subject: (s.subjectName || '').slice(0, 10),
     attendance: s.averageAttendance,
   })) ?? [];
 
@@ -300,9 +300,10 @@ export default function AnalyticsPage() {
               </div>
               {loading ? <Skeleton className="h-48" /> : (
                 <ResponsiveContainer width="100%" height={200}>
-                  <RadarChart data={subjectRadar}>
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={subjectRadar}>
                     <PolarGrid stroke="currentColor" className="opacity-10 dark:opacity-5 text-slate-400 dark:text-slate-600" />
                     <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: 'currentColor' }} className="text-slate-400 dark:text-slate-500" />
+                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8, fill: 'currentColor' }} className="text-slate-400 dark:text-slate-500" />
                     <Radar name="Attendance" dataKey="attendance" stroke="#4f46e5" fill="#4f46e5" fillOpacity={0.15} />
                     <Tooltip contentStyle={chartStyle} />
                   </RadarChart>
