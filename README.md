@@ -1,176 +1,158 @@
-# 🎓 Attendify — Production-Grade Attendance Management Platform
+# Attendify: Production-Grade Attendance Management Platform
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.x-2D3748.svg)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 
-Attendify is a **production-ready**, full-stack EdTech SaaS platform for attendance management — built for schools, colleges, coaching institutes, and universities.
+Attendify is a full-stack SaaS application built for schools, colleges, and other educational institutions to manage student attendance. It provides automated workflows for instructors, detailed analytics, offline support, and compliance reporting.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication
-- JWT access + refresh token rotation
-- Google OAuth 2.0
-- Password reset via email
-- Role-based access (Teacher / Admin)
-- Session persistence
+### Authentication and Authorization
+- Secure JWT-based auth with automatic access/refresh token rotation.
+- Google OAuth 2.0 integration for fast sign-in.
+- Self-service password resets via email.
+- Role-based permissions supporting Teacher and Admin access levels.
+- Persistent login sessions.
 
-### 📊 Dashboard
-- Real-time attendance stats
-- 30-day trend charts (Recharts)
-- Subject-wise analytics
-- Quick action shortcuts
+### Dashboard and Analytics
+- Real-time dashboard showing core attendance metrics and alerts.
+- Interactive 30-day trends and history charts using Recharts.
+- Subject-wise performance tracking.
+- Actionable shortcuts for quick access to frequent workflows.
 
-### 🏫 Class Management
-- Create classes with sections, academic years, semesters
-- Subject management with schedules
-- CSV bulk student import
-- Class-wise analytics
+### Class and Student Management
+- Structured class management supporting sections, academic years, and semesters.
+- Subjects setup with customizable weekly schedules.
+- Bulk student enrollment via CSV file upload.
+- Class-level demographic and attendance data.
 
-### ✅ Attendance System
-- One-tap marking: Present / Absent / Late / Half-Day
-- Mark-all bulk action
-- Session creation with QR/PIN/Manual mode
-- Finalize sessions (lock edits)
-- Edit previous attendance
-- Duplicate session prevention
+### Attendance Tracking
+- Simple interface for marking student status: Present, Absent, Late, or Half-Day.
+- Batch options to quickly mark all students at once.
+- Manual attendance session logging with built-in duplicate prevention.
+- Finalization locking to secure records after attendance is marked.
+- Historical record edits with audit logs.
 
-### 📈 Analytics & Reports
-- Area charts, bar charts, pie charts, radar charts
-- Filter by class, subject, date range
-- Export to PDF (styled with PDFKit)
-- Export to CSV
-- Student attendance summaries
+### Reporting
+- Student and class report generators.
+- Dynamic data filtering by date range, subject, and classroom.
+- PDF downloads with a professional layout powered by PDFKit.
+- Raw CSV exports for further data analysis.
 
-### 📱 PWA & Offline
-- Installable PWA with manifest
-- Service worker caching
-- Network-first API, cache-first static assets
-- Push notification support
+### Progressive Web App (PWA) & Offline Mode
+- Fully installable application bundle.
+- Service worker configured for offline page loads.
+- Smart API caching strategy (network-first, falling back to cached cache).
+- Support for queueing changes locally during offline periods, with auto-sync when connection resumes.
 
 ---
 
-## 🏗️ Architecture
+## Repository Architecture
 
 ```
 attendify/
 ├── apps/
-│   ├── web/          # Next.js 15 frontend (Vercel)
-│   └── api/          # Express.js backend (Railway/Render)
+│   ├── web/          # Next.js 15 frontend
+│   └── api/          # Express.js API backend
 └── packages/
     ├── types/        # Shared TypeScript types
-    └── config/       # Shared configs
+    └── config/       # Shared tooling configurations
 ```
 
-**Frontend Stack:** Next.js 15 · TypeScript · Tailwind CSS · Framer Motion · Zustand · React Hook Form · Zod · Recharts
-
-**Backend Stack:** Node.js · Express.js · TypeScript · Prisma · PostgreSQL
-
-**Security:** Helmet · CORS · Rate Limiting · bcrypt · JWT · Zod validation
+- **Frontend Stack**: Next.js 15 (App Router), TypeScript, Tailwind CSS, Framer Motion, Zustand, React Hook Form, Zod, and Recharts.
+- **Backend Stack**: Node.js, Express.js, TypeScript, Prisma, and PostgreSQL.
+- **Security Protocols**: Helmet headers, custom CORS rules, Express rate limiting, bcrypt password hashing, and Zod input validation schemas.
 
 ---
 
-## 🚀 Quick Start
+## Local Setup
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- npm 9+
+- Node.js 18 or newer
+- PostgreSQL 14 or newer
+- npm 9 or newer
 
-### 1. Clone & Install
+### 1. Clone the Repository
 ```bash
 git clone <repo-url>
 cd attendify
 npm install
 ```
 
-### 2. Configure Environment
+### 2. Configure Environment Variables
 
 ```bash
-# Backend
+# Backend Setup
 cp apps/api/.env.example apps/api/.env
-# Edit apps/api/.env — fill in DATABASE_URL and JWT secrets
+# Open and update apps/api/.env with your local DATABASE_URL and secrets
 
-# Frontend
+# Frontend Setup
 cp apps/web/.env.local.example apps/web/.env.local
-# Edit apps/web/.env.local — fill in NEXT_PUBLIC_API_URL
+# Open and update apps/web/.env.local with your backend API URL
 ```
 
-### 3. Generate JWT Secrets
+### 3. Generate Encryption Secrets
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
-Run twice — one for `JWT_ACCESS_SECRET`, one for `JWT_REFRESH_SECRET`.
+Run this script twice to generate random strings for both `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET` in your `.env` file.
 
-### 4. Setup Database
+### 4. Initialize the Database
 ```bash
-# Install backend dependencies
-cd apps/api && npm install
-
-# Generate Prisma client
+cd apps/api
+npm install
 npx prisma generate
-
-# Run migrations
 npx prisma migrate dev --name init
-
-# Seed with demo data
 npx ts-node prisma/seed.ts
 ```
 
-### 5. Install Frontend Dependencies
+### 5. Start the Development Servers
+From the root workspace directory, run:
 ```bash
-cd ../web && npm install
-```
-
-### 6. Start Development Servers
-```bash
-# From root — starts both frontend and backend
-cd ../..
 npm run dev
-
-# Or individually:
-# Backend: cd apps/api && npm run dev  (port 5000)
-# Frontend: cd apps/web && npm run dev  (port 3000)
 ```
 
-### 7. Access the App
-- **Frontend:** http://localhost:3000
-- **API:** http://localhost:5000
-- **API Health:** http://localhost:5000/health
+Alternatively, you can run the services individually:
+- **Backend**: `cd apps/api && npm run dev` (running on port 5000)
+- **Frontend**: `cd apps/web && npm run dev` (running on port 3000)
 
-### Demo Credentials
-```
-Teacher: teacher@demoschool.edu / Teacher@123
-Admin:   admin@attendify.app / Admin@123456
-```
+### 6. Verification
+- **Web App**: http://localhost:3000
+- **API Server**: http://localhost:5000
+- **Health Check**: http://localhost:5000/health
+
+#### Seed Account Credentials
+- **Teacher**: `teacher@demoschool.edu` / `Teacher@123`
+- **Admin**: `admin@attendify.app` / `Admin@123456`
 
 ---
 
-## 📁 File Structure
+## Project Structure
 
 ```
 apps/api/src/
-├── config/          # env.ts, database.ts
-├── middleware/       # auth.ts, validate.ts, errorHandler.ts
-├── routes/          # auth, class, student, attendance, report
-├── services/        # Business logic layer
-├── validators/      # Zod schemas
-└── utils/           # jwt.ts, crypto.ts, email.ts, response.ts
+├── config/           # Database client and environment configuration
+├── middleware/       # Authentication, validation, and error handlers
+├── routes/           # Endpoint handlers (auth, classes, students, attendance, reports)
+├── services/         # Core business logic
+├── validators/       # Request validation schemas
+└── utils/            # JWT, crypto, emailing, and response formatting helpers
 
 apps/web/
 ├── app/
-│   ├── (auth)/      # login, signup, forgot-password
-│   └── (dashboard)/ # dashboard, classes, students, attendance, analytics, reports
+│   ├── (auth)/       # Authentication pages
+│   └── (dashboard)/  # Main panels (settings, reporting, classes, etc.)
 ├── components/
-│   ├── ui/          # Reusable UI components
-│   └── shared/      # Layout, Sidebar, Header
+│   ├── ui/           # Generic interface primitives
+│   └── shared/       # Navbar, sidebar, and layout systems
 ├── lib/
-│   ├── api/         # Typed API client + endpoints
-│   ├── store/       # Zustand stores (auth, attendance)
-│   └── utils.ts     # Helpers
+│   ├── api/          # Axios HTTP client configuration
+│   ├── store/        # Zustand global state (auth/sessions)
+│   └── utils.ts      # Shared UI utilities
 └── public/
     ├── manifest.json
     └── sw.js
@@ -178,126 +160,110 @@ apps/web/
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
-### Auth
-| Method | Endpoint | Auth |
-|--------|----------|------|
-| POST | `/api/auth/signup` | — |
-| POST | `/api/auth/login` | — |
-| POST | `/api/auth/google` | — |
-| POST | `/api/auth/refresh` | — |
-| POST | `/api/auth/logout` | ✅ |
-| GET | `/api/auth/me` | ✅ |
-| POST | `/api/auth/forgot-password` | — |
-| POST | `/api/auth/reset-password` | — |
+### Authentication
+| Method | Endpoint | Description | Requires Auth |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/signup` | Register a new user | No |
+| POST | `/api/auth/login` | Authenticate credentials | No |
+| POST | `/api/auth/google` | Exchange Google OAuth code | No |
+| POST | `/api/auth/refresh` | Refresh access token | No |
+| POST | `/api/auth/logout` | Revoke session tokens | Yes |
+| GET | `/api/auth/me` | Fetch active user profile | Yes |
+| POST | `/api/auth/forgot-password` | Initiate password reset email | No |
+| POST | `/api/auth/reset-password` | Set new password with token | No |
 
-### Classes
+### Classes & Subjects
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/classes` | List classes |
-| POST | `/api/classes` | Create class |
-| GET | `/api/classes/:id` | Get class |
-| PUT | `/api/classes/:id` | Update class |
-| DELETE | `/api/classes/:id` | Delete (soft) |
-| GET | `/api/classes/:id/subjects` | List subjects |
-| POST | `/api/classes/subjects/create` | Add subject |
+| GET | `/api/classes` | Retrieve classes managed by the user |
+| POST | `/api/classes` | Create a new class |
+| GET | `/api/classes/:id` | Fetch class details |
+| PUT | `/api/classes/:id` | Update class parameters |
+| DELETE | `/api/classes/:id` | Soft delete a class |
+| GET | `/api/classes/:id/subjects` | List subjects associated with a class |
+| POST | `/api/classes/subjects/create` | Register a new subject |
 
 ### Students
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/students` | List (paginated) |
-| POST | `/api/students` | Create |
-| GET | `/api/students/:id` | Get profile |
-| PUT | `/api/students/:id` | Update |
-| DELETE | `/api/students/:id` | Delete (soft) |
-| GET | `/api/students/:id/attendance` | Attendance history |
-| POST | `/api/students/bulk-import` | CSV import |
+| GET | `/api/students` | Search and paginate students |
+| POST | `/api/students` | Enroll a single student |
+| GET | `/api/students/:id` | Fetch student details and statistics |
+| PUT | `/api/students/:id` | Update student profile details |
+| DELETE | `/api/students/:id` | Soft delete a student |
+| GET | `/api/students/:id/attendance` | Get detailed attendance log for a student |
+| POST | `/api/students/bulk-import` | Upload a list of students via CSV |
 
 ### Attendance
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/attendance/dashboard` | Dashboard stats |
-| GET | `/api/attendance/sessions` | List sessions |
-| POST | `/api/attendance/sessions` | Create session |
-| GET | `/api/attendance/sessions/:id` | Get session |
-| PUT | `/api/attendance/sessions/:id/finalize` | Finalize |
-| POST | `/api/attendance/mark` | Mark attendance |
-| PUT | `/api/attendance/records/:id` | Update record |
-| GET | `/api/attendance/analytics` | Analytics |
+| GET | `/api/attendance/dashboard` | Fetch dashboard stats |
+| GET | `/api/attendance/sessions` | Query logged attendance sessions |
+| POST | `/api/attendance/sessions` | Initialize a new session |
+| GET | `/api/attendance/sessions/:id` | Get details and student list for a session |
+| PUT | `/api/attendance/sessions/:id/finalize` | Finalize session and lock records |
+| POST | `/api/attendance/mark` | Record status for a list of students |
+| PUT | `/api/attendance/records/:id` | Edit specific attendance records |
+| GET | `/api/attendance/analytics` | Fetch class-level metric summaries |
 
 ### Reports
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/reports/student/:id` | Student report |
-| GET | `/api/reports/class/:id` | Class report |
-| POST | `/api/reports/export/csv` | Export CSV |
-| POST | `/api/reports/export/pdf` | Export PDF |
+| GET | `/api/reports/student/:id` | Get metrics summary for student report |
+| GET | `/api/reports/class/:id` | Get metrics summary for class report |
+| POST | `/api/reports/export/csv` | Download class report as CSV |
+| POST | `/api/reports/export/pdf` | Download class report as PDF |
 
 ---
 
-## 🧪 Testing
+## Testing
+
+Backend test suites are written using Jest and Supertest.
 
 ```bash
-# Backend unit + integration tests
+# Run unit and integration tests
 cd apps/api
 npm test
+
+# Generate test coverage reports
 npm run test:coverage
 
-# Watch mode
+# Run tests in watch mode
 npm run test:watch
 ```
 
 ---
 
-## 🚢 Deployment
+## Deployment Configuration
 
 ### Frontend (Vercel)
-1. Push to GitHub
-2. Import to Vercel
-3. Set environment variables from `.env.local.example`
-4. Deploy — automatic on every push
+1. Link your repository in the Vercel dashboard.
+2. Target the `apps/web` directory as the project root.
+3. Configure the environment variables shown in `apps/web/.env.local.example`.
+4. Deploy. Subsequent pushes to your main branch will trigger auto-deployments.
 
-### Backend (Railway)
-1. Create new Railway project
-2. Add PostgreSQL database plugin
-3. Connect GitHub repo, set root to `apps/api`
-4. Set all env variables from `.env.example`
-5. Set build command: `npm install && npx prisma migrate deploy && npm run build`
-6. Set start command: `npm start`
-
-### Database Migrations (Production)
-```bash
-npx prisma migrate deploy
-```
+### Backend (Railway/Render)
+1. Add a PostgreSQL resource instance.
+2. Link the repository, setting the root directory to `apps/api`.
+3. Provide the environment values from `apps/api/.env.example`.
+4. Configure the build command: `npm install && npx prisma migrate deploy && npm run build`.
+5. Set the startup run script command to: `npm start`.
 
 ---
 
-## 🔒 Security
+## Security Practices
 
-- JWT tokens with 15-minute access + 7-day refresh rotation
-- bcrypt with 12 salt rounds
-- Helmet for HTTP security headers
-- CORS restricted to frontend domain
-- Rate limiting: 100 req/15min global, 10 req/15min for auth
-- Zod validation on all inputs
-- SQL injection prevention via Prisma parameterized queries
-- Soft deletes preserve data integrity
+- **Token Rotation**: 15-minute expiration on access tokens paired with 7-day refresh tokens.
+- **Password Hashing**: Strong bcrypt passwords using 12 salt rounds.
+- **Request Protection**: CORS filters, Helmet headers, and IP rate-limiting guards on endpoints.
+- **SQL Protection**: Parametrization by default through Prisma.
+- **Payload Verification**: Strong input validation on both frontend and backend using Zod.
+- **Soft Deletion**: Class and student removals flag a `deletedAt` field to preserve reporting history.
 
 ---
 
-## 🌟 Performance
+## License
 
-- Prisma connection pooling
-- Database indexes on all foreign keys and search fields
-- Pagination on all list endpoints
-- React Server Components for initial data
-- Code splitting per route
-- Image optimization with Next.js Image
-- Service worker caching
-
----
-
-## 📄 License
-
-MIT © Attendify
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
